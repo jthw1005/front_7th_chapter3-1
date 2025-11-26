@@ -259,38 +259,23 @@ const ManagementPage: React.FC = () => {
 				</div>
 
 				<div className="bg-white border border-[#ddd] p-[10px]">
-					<div className="mb-[15px] border-b border-[#ccc] pb-[5px]">
-						<button
+					<div className="mb-[15px] border-b border-[#ccc] pb-[5px] flex gap-[5px]">
+						<Button
 							onClick={() => setEntityType('post')}
-							style={{
-								padding: '8px 16px',
-								marginRight: '5px',
-								fontSize: '14px',
-								fontWeight: entityType === 'post' ? 'bold' : 'normal',
-								border: '1px solid #999',
-								background: entityType === 'post' ? '#1976d2' : '#f5f5f5',
-								color: entityType === 'post' ? 'white' : '#333',
-								cursor: 'pointer',
-								borderRadius: '3px',
-							}}
+							variant={entityType === 'post' ? 'primary' : 'secondary'}
+							size="sm"
+							className="border-[#999] font-bold"
 						>
 							게시글
-						</button>
-						<button
+						</Button>
+						<Button
 							onClick={() => setEntityType('user')}
-							style={{
-								padding: '8px 16px',
-								fontSize: '14px',
-								fontWeight: entityType === 'user' ? 'bold' : 'normal',
-								border: '1px solid #999',
-								background: entityType === 'user' ? '#1976d2' : '#f5f5f5',
-								color: entityType === 'user' ? 'white' : '#333',
-								cursor: 'pointer',
-								borderRadius: '3px',
-							}}
+							variant={entityType === 'user' ? 'primary' : 'secondary'}
+							size="sm"
+							className="border-[#999] font-bold"
 						>
 							사용자
-						</button>
+						</Button>
 					</div>
 
 					<div>
