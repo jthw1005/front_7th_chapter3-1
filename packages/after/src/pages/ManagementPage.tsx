@@ -7,6 +7,7 @@ import { postService } from '../services/postService';
 import type { User } from '../services/userService';
 import type { Post } from '../services/postService';
 import '../styles/components.css';
+import StatsCard from '@/components/StatsCard';
 
 type EntityType = 'user' | 'post';
 type Entity = User | Post;
@@ -309,83 +310,11 @@ const ManagementPage: React.FC = () => {
 								marginBottom: '15px',
 							}}
 						>
-							<div
-								style={{
-									padding: '12px 15px',
-									background: '#e3f2fd',
-									border: '1px solid #90caf9',
-									borderRadius: '3px',
-								}}
-							>
-								<div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>전체</div>
-								<div style={{ fontSize: '24px', fontWeight: 'bold', color: '#1976d2' }}>
-									{stats.total}
-								</div>
-							</div>
-
-							<div
-								style={{
-									padding: '12px 15px',
-									background: '#e8f5e9',
-									border: '1px solid #81c784',
-									borderRadius: '3px',
-								}}
-							>
-								<div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
-									{stats.stat1.label}
-								</div>
-								<div style={{ fontSize: '24px', fontWeight: 'bold', color: '#388e3c' }}>
-									{stats.stat1.value}
-								</div>
-							</div>
-
-							<div
-								style={{
-									padding: '12px 15px',
-									background: '#fff3e0',
-									border: '1px solid #ffb74d',
-									borderRadius: '3px',
-								}}
-							>
-								<div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
-									{stats.stat2.label}
-								</div>
-								<div style={{ fontSize: '24px', fontWeight: 'bold', color: '#f57c00' }}>
-									{stats.stat2.value}
-								</div>
-							</div>
-
-							<div
-								style={{
-									padding: '12px 15px',
-									background: '#ffebee',
-									border: '1px solid #e57373',
-									borderRadius: '3px',
-								}}
-							>
-								<div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
-									{stats.stat3.label}
-								</div>
-								<div style={{ fontSize: '24px', fontWeight: 'bold', color: '#d32f2f' }}>
-									{stats.stat3.value}
-								</div>
-							</div>
-
-							<div
-								style={{
-									padding: '12px 15px',
-									background: '#f5f5f5',
-									border: '1px solid #bdbdbd',
-									borderRadius: '3px',
-								}}
-							>
-								<div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>
-									{stats.stat4.label}
-								</div>
-								<div style={{ fontSize: '24px', fontWeight: 'bold', color: '#424242' }}>
-									{stats.stat4.value}
-								</div>
-							</div>
+							<StatsCard label="전체" value={stats.total} color="blue" />
+							<StatsCard label={stats.stat1.label} value={stats.stat1.value} color="green" />
+							<StatsCard label={stats.stat2.label} value={stats.stat2.value} color="orange" />
+							<StatsCard label={stats.stat3.label} value={stats.stat3.value} color="red" />
+							<StatsCard label={stats.stat4.label} value={stats.stat4.value} color="gray" />
 						</div>
 
 						<div style={{ border: '1px solid #ddd', background: 'white', overflow: 'auto' }}>
