@@ -1,14 +1,4 @@
-export interface Post {
-  id: number;
-  title: string;
-  content: string;
-  author: string;
-  category: string;
-  status: 'draft' | 'published' | 'archived';
-  views: number;
-  createdAt: string;
-  updatedAt?: string;
-}
+import type { Post, PostFormData, PostStatus } from '@/types';
 
 const STORAGE_KEY = 'posts_data';
 
@@ -37,7 +27,7 @@ export const postService = {
     return posts.find(p => p.id === id) || null;
   },
 
-  async create(postData: Omit<Post, 'id' | 'createdAt' | 'views'>): Promise<Post> {
+  async create(postData: PostFormData): Promise<Post> {
 
     const posts = getPosts();
 
@@ -57,7 +47,7 @@ export const postService = {
     return newPost;
   },
 
-  async update(id: number, postData: Partial<Omit<Post, 'id' | 'createdAt' | 'views'>>): Promise<Post> {
+  async update(id: number, postData: Partial<PostFormData>): Promise<Post> {
     const posts = getPosts();
     const index = posts.findIndex(p => p.id === id);
 
@@ -68,7 +58,6 @@ export const postService = {
     posts[index] = {
       ...posts[index],
       ...postData,
-      updatedAt: new Date().toISOString().split('T')[0],
     };
     savePosts(posts);
     return posts[index];
@@ -97,7 +86,7 @@ export const postService = {
       throw new Error('Post is already published');
     }
 
-    posts[index].status = 'published';
+    posts[index].status = 'published' as PostStatus;
     savePosts(posts);
     return posts[index];
   },
@@ -110,7 +99,7 @@ export const postService = {
       throw new Error('Post not found');
     }
 
-    posts[index].status = 'archived';
+    posts[index].status = 'archived' as PostStatus;
     savePosts(posts);
     return posts[index];
   },
@@ -127,7 +116,7 @@ export const postService = {
       throw new Error('Only archived posts can be restored');
     }
 
-    posts[index].status = 'published';
+    posts[index].status = 'published' as PostStatus;
     savePosts(posts);
     return posts[index];
   },

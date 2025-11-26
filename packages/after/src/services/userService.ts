@@ -1,12 +1,4 @@
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  role: 'admin' | 'moderator' | 'user';
-  status: 'active' | 'inactive' | 'suspended';
-  createdAt: string;
-  lastLogin?: string;
-}
+import type { User, UserFormData } from '@/types';
 
 const STORAGE_KEY = 'users_data';
 
@@ -15,8 +7,8 @@ const getUsers = (): User[] => {
   return data ? JSON.parse(data) : [
     { id: 1, username: 'admin', email: 'admin@example.com', role: 'admin', status: 'active', createdAt: '2024-01-01', lastLogin: '2024-01-20' },
     { id: 2, username: 'john_doe', email: 'john@example.com', role: 'user', status: 'active', createdAt: '2024-01-05', lastLogin: '2024-01-19' },
-    { id: 3, username: 'jane_smith', email: 'jane@example.com', role: 'moderator', status: 'active', createdAt: '2024-01-10' },
-    { id: 4, username: 'bob', email: 'bob@example.com', role: 'user', status: 'suspended', createdAt: '2024-01-15' },
+    { id: 3, username: 'jane_smith', email: 'jane@example.com', role: 'moderator', status: 'active', createdAt: '2024-01-10', lastLogin: null },
+    { id: 4, username: 'bob', email: 'bob@example.com', role: 'user', status: 'suspended', createdAt: '2024-01-15', lastLogin: null },
   ];
 };
 
@@ -34,7 +26,7 @@ export const userService = {
     return users.find(u => u.id === id) || null;
   },
 
-  async create(userData: Omit<User, 'id' | 'createdAt'>): Promise<User> {
+  async create(userData: UserFormData): Promise<User> {
 
     const users = getUsers();
 
@@ -50,6 +42,7 @@ export const userService = {
       id: Math.max(...users.map(u => u.id), 0) + 1,
       ...userData,
       createdAt: new Date().toISOString().split('T')[0],
+      lastLogin: null,
     };
 
     users.push(newUser);
@@ -57,7 +50,7 @@ export const userService = {
     return newUser;
   },
 
-  async update(id: number, userData: Partial<Omit<User, 'id' | 'createdAt'>>): Promise<User> {
+  async update(id: number, userData: Partial<UserFormData>): Promise<User> {
     const users = getUsers();
     const index = users.findIndex(u => u.id === id);
 
