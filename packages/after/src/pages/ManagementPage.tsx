@@ -11,7 +11,7 @@ import '../styles/components.css';
 type EntityType = 'user' | 'post';
 type Entity = User | Post;
 
-export const ManagementPage: React.FC = () => {
+const ManagementPage: React.FC = () => {
 	const [entityType, setEntityType] = useState<EntityType>('post');
 	const [data, setData] = useState<Entity[]>([]);
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -421,6 +421,7 @@ export const ManagementPage: React.FC = () => {
 				</div>
 			</div>
 
+			{/* Create Modal */}
 			<Modal
 				isOpen={isCreateModalOpen}
 				onClose={() => {
@@ -548,6 +549,7 @@ export const ManagementPage: React.FC = () => {
 				</div>
 			</Modal>
 
+			{/* Edit Modal */}
 			<Modal
 				isOpen={isEditModalOpen}
 				onClose={() => {
@@ -686,3 +688,5 @@ export const ManagementPage: React.FC = () => {
 		</div>
 	);
 };
+
+export default ManagementPage;

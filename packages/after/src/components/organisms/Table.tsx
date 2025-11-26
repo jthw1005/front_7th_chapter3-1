@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Badge } from '../atoms/Badge';
+
 import Button from '../ui/button';
+import UserRoleBadge from '@/components/Badge/UserRoleBadge';
+import StatusBadge from '@/components/Badge/StatusBadge';
+import CategoryBadge from '@/components/Badge/CategoryBadge';
 
 interface Column {
 	key: string;
@@ -115,13 +118,13 @@ export const Table: React.FC<TableProps> = ({
 		// 도메인별 특수 렌더링
 		if (entityType === 'user') {
 			if (columnKey === 'role') {
-				return <Badge userRole={value} showIcon />;
+				return <UserRoleBadge userRole={value} />;
 			}
 			if (columnKey === 'status') {
 				// User status를 Badge status로 변환
 				const badgeStatus =
 					value === 'active' ? 'published' : value === 'inactive' ? 'draft' : 'rejected';
-				return <Badge status={badgeStatus} showIcon />;
+				return <StatusBadge status={badgeStatus} />;
 			}
 			if (columnKey === 'lastLogin') {
 				return value || '-';
@@ -142,22 +145,10 @@ export const Table: React.FC<TableProps> = ({
 
 		if (entityType === 'post') {
 			if (columnKey === 'category') {
-				const type =
-					value === 'development'
-						? 'primary'
-						: value === 'design'
-							? 'info'
-							: value === 'accessibility'
-								? 'danger'
-								: 'secondary';
-				return (
-					<Badge type={type} pill>
-						{value}
-					</Badge>
-				);
+				return <CategoryBadge category={value} />;
 			}
 			if (columnKey === 'status') {
-				return <Badge status={value} showIcon />;
+				return <StatusBadge status={value} />;
 			}
 			if (columnKey === 'views') {
 				return value?.toLocaleString() || '0';
