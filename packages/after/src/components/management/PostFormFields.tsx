@@ -1,5 +1,6 @@
-import { FormInput } from '@/components/molecules';
+// import { FormInput } from '@/components/molecules';
 import { FormTextarea } from '@/components/FormTextarea';
+import { Input } from '@/components/ui/input';
 import { FormSelect, type Option } from '@/components/ui/native-select';
 import type { Post, PostFormData } from '@/types';
 
@@ -17,7 +18,7 @@ const CATEGORY_OPTIONS: Option[] = [
 export const PostFormFields = ({ formData, onChange }: PostFormFieldsProps) => {
 	return (
 		<div className="space-y-4">
-			<FormInput
+			<Input
 				name="title"
 				value={formData.title || ''}
 				onChange={(value) => onChange({ ...formData, title: value })}
@@ -27,7 +28,7 @@ export const PostFormFields = ({ formData, onChange }: PostFormFieldsProps) => {
 				width="full"
 			/>
 			<div className="grid grid-cols-2 gap-4">
-				<FormInput
+				<Input
 					name="author"
 					value={formData.author || ''}
 					onChange={(value) => onChange({ ...formData, author: value })}

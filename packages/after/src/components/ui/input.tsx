@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
@@ -24,11 +25,13 @@ const inputVariants = cva(
 );
 
 export interface InputProps
-	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'width'>,
+	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'width' | 'onChange' | 'onBlur'>,
 		Omit<VariantProps<typeof inputVariants>, 'error'> {
 	label?: string;
 	error?: string;
 	helpText?: string;
+	onChange?: (value: string) => void;
+	onBlur?: (value: string) => void;
 	ref?: React.Ref<HTMLInputElement>;
 }
 
@@ -40,18 +43,31 @@ export const Input = ({
 	helpText,
 	required,
 	name,
+	onChange,
+	onBlur,
 	ref,
 	...props
 }: InputProps) => {
-	const displayError = error;
-	const helperClasses = cn('form-helper-text', displayError && 'error');
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (onChange) {
+			onChange(e.target.value);
+		}
+	};
+
+	const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+		if (onBlur) {
+			onBlur(e.target.value);
+		}
+	};
+
+	const helperClasses = cn('form-helper-text', error && 'error');
 
 	return (
 		<div className="form-group">
 			{label && (
 				<label htmlFor={name} className="form-label">
 					{label}
-					{required && <span style={{ color: '#d32f2f' }}>*</span>}
+					{required && <span className="text-destructive ml-1">*</span>}
 				</label>
 			)}
 
@@ -61,11 +77,23 @@ export const Input = ({
 				ref={ref}
 				className={cn(inputVariants({ error: !!error, width }), className)}
 				required={required}
+				onChange={handleChange}
+				onBlur={handleBlur}
+				aria-invalid={!!error}
+				aria-describedby={error ? `${name}-error` : helpText ? `${name}-description` : undefined}
 				{...props}
 			/>
 
-			{displayError && <span className={helperClasses}>{displayError}</span>}
-			{helpText && !displayError && <span className="form-helper-text">{helpText}</span>}
+			{error && (
+				<span id={`${name}-error`} className={helperClasses}>
+					{error}
+				</span>
+			)}
+			{helpText && !error && (
+				<span id={`${name}-description`} className="form-helper-text">
+					{helpText}
+				</span>
+			)}
 		</div>
 	);
 };

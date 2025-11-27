@@ -1,4 +1,4 @@
-import { FormInput } from '@/components/molecules';
+import { Input } from '@/components/ui/input';
 import { FormSelect, type Option } from '@/components/ui/native-select';
 import type { User, UserFormData } from '@/types';
 
@@ -22,7 +22,7 @@ const STATUS_OPTIONS: Option[] = [
 export const UserFormFields = ({ formData, onChange }: UserFormFieldsProps) => {
 	return (
 		<div className="space-y-4">
-			<FormInput
+			<Input
 				name="username"
 				value={formData.username || ''}
 				onChange={(value) => onChange({ ...formData, username: value })}
@@ -31,7 +31,7 @@ export const UserFormFields = ({ formData, onChange }: UserFormFieldsProps) => {
 				required
 				width="full"
 			/>
-			<FormInput
+			<Input
 				name="email"
 				value={formData.email || ''}
 				onChange={(value) => onChange({ ...formData, email: value })}
