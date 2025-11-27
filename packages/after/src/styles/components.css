@@ -3,6 +3,68 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+	/* Colors - Primary */
+	--color-primary-100: #bbdefb;
+	--color-primary-500: #1976d2;
+	--color-primary-700: #09377d;
+
+	/* Colors - Secondary */
+	--color-secondary-100: #f5f5f5;
+	--color-secondary-500: #838383;
+	--color-secondary-700: #2e2e2e;
+
+	/* Colors - Success */
+	--color-success-100: #abdaad;
+	--color-success-500: #459849;
+	--color-success-700: #144b18;
+
+	/* Colors - Danger */
+	--color-danger-100: #edadad;
+	--color-danger-500: #dc5050;
+	--color-danger-700: #b71c1c;
+
+	/* Colors - Warning */
+	--color-warning-100: #fff3e0;
+	--color-warning-500: #f57c00;
+	--color-warning-700: #e65100;
+
+	/* Spacing */
+	--spacing-0: 0px;
+	--spacing-1: 4px;
+	--spacing-2: 8px;
+	--spacing-3: 12px;
+	--spacing-4: 16px;
+	--spacing-5: 20px;
+	--spacing-6: 24px;
+	--spacing-8: 32px;
+	--spacing-10: 40px;
+	--spacing-12: 48px;
+	--spacing-16: 64px;
+
+	/* Typography - Font Sizes */
+	--font-size-xs: 0.625rem;
+	--font-size-sm: 0.75rem;
+	--font-size-base: 0.875rem;
+	--font-size-md: 1rem;
+	--font-size-lg: 1.125rem;
+	--font-size-xl: 1.25rem;
+	--font-size-2xl: 1.5rem;
+	--font-size-3xl: 1.875rem;
+
+	/* Typography - Font Weights */
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+
+	/* Typography - Line Heights */
+	--line-height-none: 1;
+	--line-height-tight: 1.25;
+	--line-height-normal: 1.5;
+	--line-height-relaxed: 1.75;
+}
+
 @layer base {
 	* {
 		margin: 0;
@@ -12,57 +74,57 @@
 
 /* Form Input styles */
 .form-group {
-	margin-bottom: 16px;
+	margin-bottom: var(--spacing-4);
 }
 
 .form-label {
 	display: block;
-	margin-bottom: 6px;
-	color: #333;
-	font-size: 13px;
-	font-weight: bold;
+	margin-bottom: var(--spacing-2);
+	color: var(--color-gray-800);
+	font-size: var(--font-size-sm);
+	font-weight: var(--font-weight-bold);
 	font-family: Arial, sans-serif;
 }
 
 .form-input,
 .form-select {
 	width: 100%;
-	padding: 8px 10px;
-	font-size: 14px;
+	padding: var(--spacing-2) var(--spacing-3);
+	font-size: var(--font-size-base);
 	font-family: Arial, sans-serif;
-	color: #000;
-	border: 1px solid #ccc;
+	color: black;
+	border: 1px solid var(--color-gray-300);
 	border-radius: 3px;
-	background-color: #fff;
+	background-color: white;
 	box-sizing: border-box;
 }
 
 .form-input:focus,
 .form-select:focus {
-	border-color: #1976d2;
+	border-color: var(--color-primary-500);
 	outline: none;
 }
 
 .form-input.error,
 .form-select.error {
-	border-color: #d32f2f;
+	border-color: var(--color-danger-500);
 }
 
 .form-input:disabled,
 .form-select:disabled {
-	background-color: #f5f5f5;
+	background-color: var(--color-secondary-100);
 	cursor: not-allowed;
 }
 
 .form-helper-text {
-	color: #666;
-	font-size: 12px;
+	color: var(--color-gray-600);
+	font-size: var(--font-size-sm);
 	font-family: Arial, sans-serif;
-	margin-top: 4px;
+	margin-top: var(--spacing-1);
 }
 
 .form-helper-text.error {
-	color: #d32f2f;
+	color: var(--color-danger-500);
 }
 
 .input-width-small {
@@ -76,130 +138,6 @@
 }
 .input-width-full {
 	width: 100%;
-}
-
-/* Card styles */
-.card {
-	border-radius: 4px;
-	margin-bottom: 16px;
-	overflow: hidden;
-	background-color: #fff;
-	font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-}
-
-.card-default {
-	border: 1px solid rgba(0, 0, 0, 0.12);
-	box-shadow:
-		0px 2px 1px -1px rgba(0, 0, 0, 0.2),
-		0px 1px 1px 0px rgba(0, 0, 0, 0.14),
-		0px 1px 3px 0px rgba(0, 0, 0, 0.12);
-}
-
-.card-bordered {
-	border: 1px solid rgba(0, 0, 0, 0.12);
-	box-shadow: none;
-}
-
-.card-elevated {
-	border: 1px solid rgba(0, 0, 0, 0.08);
-	box-shadow:
-		0px 2px 4px -1px rgba(0, 0, 0, 0.12),
-		0px 1px 2px 0px rgba(0, 0, 0, 0.08),
-		0px 1px 4px 0px rgba(0, 0, 0, 0.08);
-}
-
-.card-flat {
-	border: 1px solid rgba(0, 0, 0, 0.08);
-	box-shadow: none;
-	background-color: #fafafa;
-}
-
-.card-header {
-	padding: 20px;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background-color: #fafafa;
-}
-
-.card-title {
-	margin: 0;
-	font-size: 1.125rem;
-	font-weight: 500;
-	line-height: 1.6;
-	color: rgba(0, 0, 0, 0.87);
-}
-
-.card-subtitle {
-	margin: 4px 0 0 0;
-	font-size: 0.875rem;
-	font-weight: 400;
-	line-height: 1.43;
-	color: rgba(0, 0, 0, 0.6);
-}
-
-.card-body {
-	padding: 20px;
-}
-
-/* Badge styles */
-.badge {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	font-weight: bold;
-	font-family: Arial, sans-serif;
-	line-height: 1;
-	white-space: nowrap;
-	border-radius: 3px;
-}
-
-.badge-pill {
-	border-radius: 10px;
-}
-
-.badge-primary {
-	background-color: #1976d2;
-	color: #fff;
-}
-.badge-secondary {
-	background-color: #757575;
-	color: #fff;
-}
-.badge-success {
-	background-color: #388e3c;
-	color: #fff;
-}
-.badge-danger {
-	background-color: #d32f2f;
-	color: #fff;
-}
-.badge-warning {
-	background-color: #f57c00;
-	color: #fff;
-}
-.badge-info {
-	background-color: #0288d1;
-	color: #fff;
-}
-
-.badge-small {
-	padding: 0px 4px;
-	font-size: 0.625rem;
-	height: 16px;
-}
-
-.badge-medium {
-	padding: 0px 8px;
-	font-size: 0.75rem;
-	height: 20px;
-}
-
-.badge-large {
-	padding: 0px 10px;
-	font-size: 0.8125rem;
-	height: 24px;
 }
 
 /* Alert styles */

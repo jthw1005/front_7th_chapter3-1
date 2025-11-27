@@ -1,40 +1,35 @@
-const StatsCard = ({
-	label,
-	value,
-	color,
-}: {
+import { cva, type VariantProps } from 'class-variance-authority';
+import { cn } from '@/lib/utils';
+
+const statsCardVariants = cva(
+	'p-3 border rounded-sm',
+	{
+		variants: {
+			color: {
+				blue: 'bg-primary-50 border-primary-300 text-primary-500',
+				green: 'bg-success-50 border-success-300 text-success-500',
+				orange: 'bg-warning-50 border-warning-300 text-warning-500',
+				red: 'bg-danger-50 border-danger-300 text-danger-500',
+				gray: 'bg-gray-100 border-gray-300 text-gray-700',
+			},
+		},
+		defaultVariants: {
+			color: 'gray',
+		},
+	},
+);
+
+interface StatsCardProps extends VariantProps<typeof statsCardVariants> {
 	label: string;
 	value: number;
-	color: 'blue' | 'green' | 'orange' | 'red' | 'gray';
-}) => {
-	const getColorCodes = () => {
-		switch (color) {
-			case 'blue':
-				return { background: '#e3f2fd', border: '#90caf9', text: '#1976d2' };
-			case 'green':
-				return { background: '#e8f5e9', border: '#81c784', text: '#388e3c' };
-			case 'orange':
-				return { background: '#fff3e0', border: '#ffb74d', text: '#f57c00' };
-			case 'red':
-				return { background: '#ffebee', border: '#e57373', text: '#d32f2f' };
-			default:
-				return { background: '#f5f5f5', border: '#bdbdbd', text: '#424242' };
-		}
-	};
+	className?: string;
+}
 
-	const { background, border, text } = getColorCodes();
-
+const StatsCard = ({ label, value, color, className }: StatsCardProps) => {
 	return (
-		<div
-			style={{
-				padding: '12px 15px',
-				background: background,
-				border: `1px solid ${border}`,
-				borderRadius: '3px',
-			}}
-		>
-			<div style={{ fontSize: '12px', color: '#666', marginBottom: '4px' }}>{label}</div>
-			<div style={{ fontSize: '24px', fontWeight: 'bold', color: text }}>{value}</div>
+		<div className={cn(statsCardVariants({ color }), className)}>
+			<div className="text-xs text-gray-600 mb-1">{label}</div>
+			<div className="text-2xl font-bold">{value}</div>
 		</div>
 	);
 };

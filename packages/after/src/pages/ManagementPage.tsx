@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import Button from '../components/ui/button';
 import { Alert, Table, Modal } from '../components/organisms';
 import { FormInput, FormSelect, FormTextarea } from '../components/molecules';
-import { userService } from '../services/userService';
-import { postService } from '../services/postService';
-import type { User } from '../services/userService';
-import type { Post } from '../services/postService';
+import type { User, Post, PostStatus, TableColumn, UserFormData, PostFormData } from '@/types';
 import '../styles/components.css';
 import StatsCard from '@/components/StatsCard';
+import UserRoleBadge from '@/components/Badge/UserRoleBadge';
+import StatusBadge from '@/components/Badge/StatusBadge';
+import CategoryBadge from '@/components/Badge/CategoryBadge';
+import { useUserManagement } from '@/hooks/useUserManagement';
+import { usePostManagement } from '@/hooks/usePostManagement';
 
 type EntityType = 'user' | 'post';
 type Entity = User | Post;
 
 const ManagementPage: React.FC = () => {
 	const [entityType, setEntityType] = useState<EntityType>('post');
-	const [data, setData] = useState<Entity[]>([]);
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [selectedItem, setSelectedItem] = useState<Entity | null>(null);
@@ -25,6 +26,14 @@ const ManagementPage: React.FC = () => {
 
 	const [formData, setFormData] = useState<any>({});
 
+	// Use custom hooks for business logic
+	const userManagement = useUserManagement();
+	const postManagement = usePostManagement();
+
+	// Get current data based on entity type
+	const data = entityType === 'user' ? userManagement.users : postManagement.posts;
+	const hookError = entityType === 'user' ? userManagement.error : postManagement.error;
+
 	useEffect(() => {
 		loadData();
 		setFormData({});
@@ -33,43 +42,43 @@ const ManagementPage: React.FC = () => {
 		setSelectedItem(null);
 	}, [entityType]);
 
-	const loadData = async () => {
-		try {
-			let result: Entity[];
-
-			if (entityType === 'user') {
-				result = await userService.getAll();
-			} else {
-				result = await postService.getAll();
-			}
-
-			setData(result);
-		} catch (error: any) {
-			setErrorMessage('데이터를 불러오는데 실패했습니다');
+	// Show hook errors in the UI
+	useEffect(() => {
+		if (hookError) {
+			setErrorMessage(hookError);
 			setShowErrorAlert(true);
+		}
+	}, [hookError]);
+
+	const loadData = async () => {
+		if (entityType === 'user') {
+			await userManagement.loadUsers();
+		} else {
+			await postManagement.loadPosts();
 		}
 	};
 
 	const handleCreate = async () => {
 		try {
 			if (entityType === 'user') {
-				await userService.create({
+				const userData: UserFormData = {
 					username: formData.username,
 					email: formData.email,
 					role: formData.role || 'user',
 					status: formData.status || 'active',
-				});
+				};
+				await userManagement.createUser(userData);
 			} else {
-				await postService.create({
+				const postData: PostFormData = {
 					title: formData.title,
 					content: formData.content || '',
 					author: formData.author,
 					category: formData.category,
 					status: formData.status || 'draft',
-				});
+				};
+				await postManagement.createPost(postData);
 			}
 
-			await loadData();
 			setIsCreateModalOpen(false);
 			setFormData({});
 			setAlertMessage(`${entityType === 'user' ? '사용자' : '게시글'}가 생성되었습니다`);
@@ -110,12 +119,11 @@ const ManagementPage: React.FC = () => {
 
 		try {
 			if (entityType === 'user') {
-				await userService.update(selectedItem.id, formData);
+				await userManagement.updateUser(selectedItem.id, formData);
 			} else {
-				await postService.update(selectedItem.id, formData);
+				await postManagement.updatePost(selectedItem.id, formData);
 			}
 
-			await loadData();
 			setIsEditModalOpen(false);
 			setFormData({});
 			setSelectedItem(null);
@@ -132,12 +140,11 @@ const ManagementPage: React.FC = () => {
 
 		try {
 			if (entityType === 'user') {
-				await userService.delete(id);
+				await userManagement.deleteUser(id);
 			} else {
-				await postService.delete(id);
+				await postManagement.deletePost(id);
 			}
 
-			await loadData();
 			setAlertMessage('삭제되었습니다');
 			setShowSuccessAlert(true);
 		} catch (error: any) {
@@ -151,14 +158,13 @@ const ManagementPage: React.FC = () => {
 
 		try {
 			if (action === 'publish') {
-				await postService.publish(id);
+				await postManagement.publishPost(id);
 			} else if (action === 'archive') {
-				await postService.archive(id);
+				await postManagement.archivePost(id);
 			} else if (action === 'restore') {
-				await postService.restore(id);
+				await postManagement.restorePost(id);
 			}
 
-			await loadData();
 			const message = action === 'publish' ? '게시' : action === 'archive' ? '보관' : '복원';
 			setAlertMessage(`${message}되었습니다`);
 			setShowSuccessAlert(true);
@@ -222,31 +228,112 @@ const ManagementPage: React.FC = () => {
 		}
 	};
 
-	// 🚨 Table 컴포넌트에 로직을 위임하여 간소화
-	const renderTableColumns = () => {
-		if (entityType === 'user') {
-			return [
-				{ key: 'id', header: 'ID', width: '60px' },
-				{ key: 'username', header: '사용자명', width: '150px' },
-				{ key: 'email', header: '이메일' },
-				{ key: 'role', header: '역할', width: '120px' },
-				{ key: 'status', header: '상태', width: '120px' },
-				{ key: 'createdAt', header: '생성일', width: '120px' },
-				{ key: 'lastLogin', header: '마지막 로그인', width: '140px' },
-				{ key: 'actions', header: '관리', width: '200px' },
-			];
-		} else {
-			return [
-				{ key: 'id', header: 'ID', width: '60px' },
-				{ key: 'title', header: '제목' },
-				{ key: 'author', header: '작성자', width: '120px' },
-				{ key: 'category', header: '카테고리', width: '140px' },
-				{ key: 'status', header: '상태', width: '120px' },
-				{ key: 'views', header: '조회수', width: '100px' },
-				{ key: 'createdAt', header: '작성일', width: '120px' },
-				{ key: 'actions', header: '관리', width: '250px' },
-			];
+	const userColumns: TableColumn<User>[] = [
+		{ key: 'id', header: 'ID', width: '60px' },
+		{ key: 'username', header: '사용자명', width: '150px' },
+		{ key: 'email', header: '이메일' },
+		{ key: 'role', header: '역할', width: '120px' },
+		{ key: 'status', header: '상태', width: '120px' },
+		{ key: 'createdAt', header: '생성일', width: '120px' },
+		{ key: 'lastLogin', header: '마지막 로그인', width: '140px' },
+		{ key: 'actions', header: '관리', width: '200px' },
+	];
+
+	const postColumns: TableColumn<Post>[] = [
+		{ key: 'id', header: 'ID', width: '60px' },
+		{ key: 'title', header: '제목' },
+		{ key: 'author', header: '작성자', width: '120px' },
+		{ key: 'category', header: '카테고리', width: '140px' },
+		{ key: 'status', header: '상태', width: '120px' },
+		{ key: 'views', header: '조회수', width: '100px' },
+		{ key: 'createdAt', header: '작성일', width: '120px' },
+		{ key: 'actions', header: '관리', width: '250px' },
+	];
+
+	const renderUserCell = (row: User, column: TableColumn<User>): React.ReactNode => {
+		const columnKey = column.key;
+
+		if (columnKey === 'role') {
+			return <UserRoleBadge userRole={row.role} />;
 		}
+
+		if (columnKey === 'status') {
+			const statusMap: Record<User['status'], PostStatus> = {
+				active: 'published',
+				inactive: 'draft',
+				suspended: 'rejected',
+			};
+			return <StatusBadge status={statusMap[row.status]} />;
+		}
+
+		if (columnKey === 'lastLogin') {
+			return row.lastLogin || '-';
+		}
+
+		if (columnKey === 'actions') {
+			return (
+				<div style={{ display: 'flex', gap: '8px' }}>
+					<Button size="sm" variant="primary" onClick={() => handleEdit(row)}>
+						수정
+					</Button>
+					<Button size="sm" variant="danger" onClick={() => handleDelete(row.id)}>
+						삭제
+					</Button>
+				</div>
+			);
+		}
+
+		return row[columnKey];
+	};
+
+	const renderPostCell = (row: Post, column: TableColumn<Post>): React.ReactNode => {
+		const columnKey = column.key;
+
+		if (columnKey === 'category') {
+			return <CategoryBadge category={row.category} />;
+		}
+
+		if (columnKey === 'status') {
+			return <StatusBadge status={row.status} />;
+		}
+
+		if (columnKey === 'views') {
+			return row.views?.toLocaleString() || '0';
+		}
+
+		if (columnKey === 'actions') {
+			return (
+				<div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+					<Button size="sm" variant="primary" onClick={() => handleEdit(row)}>
+						수정
+					</Button>
+					{row.status === 'draft' && (
+						<Button size="sm" variant="success" onClick={() => handleStatusAction(row.id, 'publish')}>
+							게시
+						</Button>
+					)}
+					{row.status === 'published' && (
+						<Button
+							size="sm"
+							variant="secondary"
+							onClick={() => handleStatusAction(row.id, 'archive')}
+						>
+							보관
+						</Button>
+					)}
+					{row.status === 'archived' && (
+						<Button size="sm" variant="primary" onClick={() => handleStatusAction(row.id, 'restore')}>
+							복원
+						</Button>
+					)}
+					<Button size="sm" variant="danger" onClick={() => handleDelete(row.id)}>
+						삭제
+					</Button>
+				</div>
+			);
+		}
+
+		return row[columnKey];
 	};
 
 	const stats = getStats();
@@ -318,18 +405,25 @@ const ManagementPage: React.FC = () => {
 						</div>
 
 						<div style={{ border: '1px solid #ddd', background: 'white', overflow: 'auto' }}>
-							<Table
-								columns={renderTableColumns()}
-								data={data}
-								striped
-								hover
-								entityType={entityType}
-								onEdit={handleEdit}
-								onDelete={handleDelete}
-								onPublish={(id) => handleStatusAction(id, 'publish')}
-								onArchive={(id) => handleStatusAction(id, 'archive')}
-								onRestore={(id) => handleStatusAction(id, 'restore')}
-							/>
+							{entityType === 'user' ? (
+								<Table
+									columns={userColumns}
+									data={data as User[]}
+									striped
+									hover
+									renderCell={renderUserCell}
+									getRowKey={(row) => row.id}
+								/>
+							) : (
+								<Table
+									columns={postColumns}
+									data={data as Post[]}
+									striped
+									hover
+									renderCell={renderPostCell}
+									getRowKey={(row) => row.id}
+								/>
+							)}
 						</div>
 					</div>
 				</div>

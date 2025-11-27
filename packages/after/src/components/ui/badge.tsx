@@ -9,17 +9,17 @@ export const badgeVariants = cva(
 	{
 		variants: {
 			variant: {
-				primary: 'bg-[#1976d2] text-white',
-				secondary: 'bg-[#757575] text-white',
-				success: 'bg-[#388e3c] text-white',
-				danger: 'bg-[#d32f2f] text-white',
-				warning: 'bg-[#f57c00] text-white',
-				info: 'bg-[#0288d1] text-white',
+				primary: 'bg-primary-500 text-white',
+				secondary: 'bg-secondary-500 text-white',
+				success: 'bg-success-500 text-white',
+				danger: 'bg-danger-500 text-white',
+				warning: 'bg-warning-500 text-white',
+				info: 'bg-info-500 text-white',
 			},
 			size: {
-				small: 'px-1 text-[0.625rem] h-4',
+				small: 'px-1 text-xs h-4',
 				medium: 'px-2 text-xs h-5',
-				large: 'px-2.5 text-[0.8125rem] h-6',
+				large: 'px-2.5 text-sm h-6',
 			},
 			pill: {
 				true: 'rounded-[10px]',

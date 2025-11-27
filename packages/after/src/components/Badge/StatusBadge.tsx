@@ -1,8 +1,8 @@
 import Badge, { badgeVariants } from '@/components/ui/badge';
-import type { Status } from '@/types';
+import type { PostStatus } from '@/types';
 import type { VariantProps } from 'class-variance-authority';
 
-const StatusBadge = ({ status }: { status: Status }) => {
+const StatusBadge = ({ status }: { status: PostStatus }) => {
 	const getBadgeProps = (): {
 		type: VariantProps<typeof badgeVariants>['variant'];
 		label: string;

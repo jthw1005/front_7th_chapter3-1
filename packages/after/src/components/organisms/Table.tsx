@@ -1,39 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import type { TableColumn } from '@/types/components';
 
-import Button from '../ui/button';
-import UserRoleBadge from '@/components/Badge/UserRoleBadge';
-import StatusBadge from '@/components/Badge/StatusBadge';
-import CategoryBadge from '@/components/Badge/CategoryBadge';
-
-interface Column {
-	key: string;
-	header: string;
-	width?: string;
-	sortable?: boolean;
-}
-
-// 🚨 Bad Practice: UI 컴포넌트가 도메인 타입을 알고 있음
-interface TableProps {
-	columns?: Column[];
-	data?: any[];
+interface TableProps<T> {
+	columns: TableColumn<T>[];
+	data: T[];
 	striped?: boolean;
 	bordered?: boolean;
 	hover?: boolean;
 	pageSize?: number;
 	searchable?: boolean;
 	sortable?: boolean;
-	onRowClick?: (row: any) => void;
-
-	// 🚨 도메인 관심사 추가
-	entityType?: 'user' | 'post';
-	onEdit?: (item: any) => void;
-	onDelete?: (id: number) => void;
-	onPublish?: (id: number) => void;
-	onArchive?: (id: number) => void;
-	onRestore?: (id: number) => void;
+	onRowClick?: (row: T) => void;
+	renderCell?: (row: T, column: TableColumn<T>) => React.ReactNode;
+	getRowKey?: (row: T, index: number) => string | number;
 }
 
-export const Table: React.FC<TableProps> = ({
+export function Table<T extends Record<string, any>>({
 	columns,
 	data = [],
 	striped = false,
@@ -43,24 +25,20 @@ export const Table: React.FC<TableProps> = ({
 	searchable = false,
 	sortable = false,
 	onRowClick,
-	entityType,
-	onEdit,
-	onDelete,
-	onPublish,
-	onArchive,
-	onRestore,
-}) => {
-	const [tableData, setTableData] = useState<any[]>(data);
+	renderCell,
+	getRowKey = (_, index) => index,
+}: TableProps<T>) {
+	const [tableData, setTableData] = useState<T[]>(data);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [searchTerm, setSearchTerm] = useState('');
-	const [sortColumn, setSortColumn] = useState('');
+	const [sortColumn, setSortColumn] = useState<keyof T | ''>('');
 	const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
 	useEffect(() => {
 		setTableData(data);
 	}, [data]);
 
-	const handleSort = (columnKey: string) => {
+	const handleSort = (columnKey: keyof T) => {
 		if (!sortable) return;
 
 		const newDirection = sortColumn === columnKey && sortDirection === 'asc' ? 'desc' : 'asc';
@@ -105,82 +83,8 @@ export const Table: React.FC<TableProps> = ({
 		.filter(Boolean)
 		.join(' ');
 
-	const actualColumns =
-		columns ||
-		(tableData[0]
-			? Object.keys(tableData[0]).map((key) => ({ key, header: key, width: undefined }))
-			: []);
-
-	// 🚨 Bad Practice: Table 컴포넌트가 도메인별 렌더링 로직을 알고 있음
-	const renderCell = (row: any, columnKey: string) => {
-		const value = row[columnKey];
-
-		// 도메인별 특수 렌더링
-		if (entityType === 'user') {
-			if (columnKey === 'role') {
-				return <UserRoleBadge userRole={value} />;
-			}
-			if (columnKey === 'status') {
-				// User status를 Badge status로 변환
-				const badgeStatus =
-					value === 'active' ? 'published' : value === 'inactive' ? 'draft' : 'rejected';
-				return <StatusBadge status={badgeStatus} />;
-			}
-			if (columnKey === 'lastLogin') {
-				return value || '-';
-			}
-			if (columnKey === 'actions') {
-				return (
-					<div style={{ display: 'flex', gap: '8px' }}>
-						<Button size="sm" variant="primary" onClick={() => onEdit?.(row)}>
-							수정
-						</Button>
-						<Button size="sm" variant="danger" onClick={() => onDelete?.(row.id)}>
-							삭제
-						</Button>
-					</div>
-				);
-			}
-		}
-
-		if (entityType === 'post') {
-			if (columnKey === 'category') {
-				return <CategoryBadge category={value} />;
-			}
-			if (columnKey === 'status') {
-				return <StatusBadge status={value} />;
-			}
-			if (columnKey === 'views') {
-				return value?.toLocaleString() || '0';
-			}
-			if (columnKey === 'actions') {
-				return (
-					<div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-						<Button size="sm" variant="primary" onClick={() => onEdit?.(row)}>
-							수정
-						</Button>
-						{row.status === 'draft' && (
-							<Button size="sm" variant="success" onClick={() => onPublish?.(row.id)}>
-								게시
-							</Button>
-						)}
-						{row.status === 'published' && (
-							<Button size="sm" variant="secondary" onClick={() => onArchive?.(row.id)}>
-								보관
-							</Button>
-						)}
-						{row.status === 'archived' && (
-							<Button size="sm" variant="primary" onClick={() => onRestore?.(row.id)}>
-								복원
-							</Button>
-						)}
-						<Button size="sm" variant="danger" onClick={() => onDelete?.(row.id)}>
-							삭제
-						</Button>
-					</div>
-				);
-			}
-		}
+	const defaultRenderCell = (row: T, column: TableColumn<T>): React.ReactNode => {
+		const value = row[column.key as keyof T];
 
 		// React Element면 그대로 렌더링
 		if (React.isValidElement(value)) {
@@ -212,18 +116,18 @@ export const Table: React.FC<TableProps> = ({
 			<table className={tableClasses}>
 				<thead>
 					<tr>
-						{actualColumns.map((column) => (
+						{columns.map((column) => (
 							<th
-								key={column.key}
+								key={String(column.key)}
 								style={column.width ? { width: column.width } : undefined}
-								onClick={() => sortable && handleSort(column.key)}
+								onClick={() => sortable && column.sortable !== false && handleSort(column.key)}
 							>
 								<div
 									style={{
 										display: 'flex',
 										alignItems: 'center',
 										gap: '4px',
-										cursor: sortable ? 'pointer' : 'default',
+										cursor: sortable && column.sortable !== false ? 'pointer' : 'default',
 									}}
 								>
 									{column.header}
@@ -238,13 +142,13 @@ export const Table: React.FC<TableProps> = ({
 				<tbody>
 					{paginatedData.map((row, rowIndex) => (
 						<tr
-							key={rowIndex}
+							key={getRowKey(row, rowIndex)}
 							onClick={() => onRowClick?.(row)}
 							style={{ cursor: onRowClick ? 'pointer' : 'default' }}
 						>
-							{actualColumns.map((column) => (
-								<td key={column.key}>
-									{entityType ? renderCell(row, column.key) : row[column.key]}
+							{columns.map((column) => (
+								<td key={String(column.key)}>
+									{renderCell ? renderCell(row, column) : defaultRenderCell(row, column)}
 								</td>
 							))}
 						</tr>
@@ -294,4 +198,4 @@ export const Table: React.FC<TableProps> = ({
 			)}
 		</div>
 	);
-};
+}

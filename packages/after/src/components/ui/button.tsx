@@ -10,18 +10,18 @@ const buttonVariants = cva(
 		variants: {
 			variant: {
 				primary:
-					'bg-[#1976d2] text-white border-[#1565c0] hover:bg-[#1565c0] hover:disabled:bg-[#1976d2]',
+					'bg-primary-500 text-white border-primary-600 hover:bg-primary-600 hover:disabled:bg-primary-500',
 				secondary:
-					'bg-[#f5f5f5] text-[#333] border-[#ddd] hover:bg-[#e0e0e0] hover:disabled:bg-[#f5f5f5]',
+					'bg-secondary-100 text-gray-800 border-secondary-300 hover:bg-secondary-200 hover:disabled:bg-secondary-100',
 				danger:
-					'bg-[#d32f2f] text-white border-[#c62828] hover:bg-[#c62828] hover:disabled:bg-[#d32f2f]',
+					'bg-danger-500 text-white border-danger-600 hover:bg-danger-600 hover:disabled:bg-danger-500',
 				success:
-					'bg-[#388e3c] text-white border-[#2e7d32] hover:bg-[#2e7d32] hover:disabled:bg-[#388e3c]',
+					'bg-success-500 text-white border-success-600 hover:bg-success-600 hover:disabled:bg-success-500',
 			},
 			size: {
-				sm: 'px-3 py-1.5 text-[13px]',
-				md: 'px-5 py-2.5 text-[14px]',
-				lg: 'px-6 py-3 text-[15px]',
+				sm: 'px-3 py-1.5 text-sm',
+				md: 'px-5 py-2.5 text-base',
+				lg: 'px-6 py-3 text-md',
 			},
 			fullWidth: {
 				true: 'w-full',
