@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import Button from '@/components/ui/button';
 import { Alert } from '@/components/Alert';
@@ -10,18 +12,42 @@ import UserRoleBadge from '@/components/Badge/UserRoleBadge';
 import StatusBadge from '@/components/Badge/StatusBadge';
 import { useUserManagement } from '@/hooks/useUserManagement';
 import { useAlert } from '@/hooks/useAlert';
-import { useFormModal } from '@/hooks/useFormModal';
 import { UserFormFields } from '@/components/management/UserFormFields';
+import { userFormSchema, type UserFormSchema } from '@/schemas';
 import type { VariantProps } from 'class-variance-authority';
 
 const UserManagement = () => {
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
+	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
 	const { users, loadUsers, createUser, updateUser, deleteUser, error } = useUserManagement();
 
 	const alert = useAlert();
-	const createModal = useFormModal<UserFormData>();
-	const editModal = useFormModal<UserFormData>();
+
+	// Create form
+	const createForm = useForm<UserFormSchema>({
+		resolver: zodResolver(userFormSchema),
+		defaultValues: {
+			username: '',
+			email: '',
+			role: 'user',
+			status: 'active',
+		},
+		mode: 'onChange',
+	});
+
+	// Edit form
+	const editForm = useForm<UserFormSchema>({
+		resolver: zodResolver(userFormSchema),
+		defaultValues: {
+			username: '',
+			email: '',
+			role: 'user',
+			status: 'active',
+		},
+		mode: 'onChange',
+	});
 
 	useEffect(() => {
 		loadUsers();
@@ -33,17 +59,27 @@ const UserManagement = () => {
 		}
 	}, [error, alert]);
 
-	const handleCreate = async () => {
+	const handleCreateModalOpen = () => {
+		createForm.reset();
+		setIsCreateModalOpen(true);
+	};
+
+	const handleCreateModalClose = () => {
+		setIsCreateModalOpen(false);
+		createForm.reset();
+	};
+
+	const handleCreate = async (data: UserFormSchema) => {
 		try {
 			const userData: UserFormData = {
-				username: createModal.formData.username!,
-				email: createModal.formData.email!,
-				role: createModal.formData.role || 'user',
-				status: createModal.formData.status || 'active',
+				username: data.username,
+				email: data.email,
+				role: data.role,
+				status: data.status,
 			};
 			await createUser(userData);
 
-			createModal.close();
+			handleCreateModalClose();
 			alert.displaySuccess('사용자가 생성되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
@@ -56,22 +92,28 @@ const UserManagement = () => {
 
 	const handleEdit = (user: User) => {
 		setSelectedUser(user);
-		editModal.open({
+		editForm.reset({
 			username: user.username,
 			email: user.email,
 			role: user.role,
 			status: user.status,
 		});
+		setIsEditModalOpen(true);
 	};
 
-	const handleUpdate = async () => {
+	const handleEditModalClose = () => {
+		setIsEditModalOpen(false);
+		setSelectedUser(null);
+		editForm.reset();
+	};
+
+	const handleUpdate = async (data: UserFormSchema) => {
 		if (!selectedUser) return;
 
 		try {
-			await updateUser(selectedUser.id, editModal.formData);
+			await updateUser(selectedUser.id, data);
 
-			editModal.close();
-			setSelectedUser(null);
+			handleEditModalClose();
 			alert.displaySuccess('사용자가 수정되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
@@ -182,7 +224,7 @@ const UserManagement = () => {
 	return (
 		<>
 			<div className="mb-4 text-right">
-				<Button variant="primary" size="md" onClick={() => createModal.open()}>
+				<Button variant="primary" size="md" onClick={handleCreateModalOpen}>
 					새로 만들기
 				</Button>
 			</div>
@@ -222,48 +264,40 @@ const UserManagement = () => {
 
 			{/* Create Modal */}
 			<Modal
-				isOpen={createModal.isOpen}
-				onClose={createModal.close}
+				isOpen={isCreateModalOpen}
+				onClose={handleCreateModalClose}
 				title="새 사용자 만들기"
 				size="large"
 				showFooter
 				footerContent={
 					<>
-						<Button variant="secondary" size="md" onClick={createModal.close}>
+						<Button variant="secondary" size="md" onClick={handleCreateModalClose}>
 							취소
 						</Button>
-						<Button variant="primary" size="md" onClick={handleCreate}>
+						<Button variant="primary" size="md" onClick={createForm.handleSubmit(handleCreate)}>
 							생성
 						</Button>
 					</>
 				}
 			>
-				<UserFormFields formData={createModal.formData} onChange={createModal.updateFormData} />
+				<FormProvider {...createForm}>
+					<UserFormFields />
+				</FormProvider>
 			</Modal>
 
 			{/* Edit Modal */}
 			<Modal
-				isOpen={editModal.isOpen}
-				onClose={() => {
-					editModal.close();
-					setSelectedUser(null);
-				}}
+				isOpen={isEditModalOpen}
+				onClose={handleEditModalClose}
 				title="사용자 수정"
 				size="large"
 				showFooter
 				footerContent={
 					<>
-						<Button
-							variant="secondary"
-							size="md"
-							onClick={() => {
-								editModal.close();
-								setSelectedUser(null);
-							}}
-						>
+						<Button variant="secondary" size="md" onClick={handleEditModalClose}>
 							취소
 						</Button>
-						<Button variant="primary" size="md" onClick={handleUpdate}>
+						<Button variant="primary" size="md" onClick={editForm.handleSubmit(handleUpdate)}>
 							수정 완료
 						</Button>
 					</>
@@ -276,7 +310,9 @@ const UserManagement = () => {
 						</Alert>
 					)}
 
-					<UserFormFields formData={editModal.formData} onChange={editModal.updateFormData} />
+					<FormProvider {...editForm}>
+						<UserFormFields />
+					</FormProvider>
 				</div>
 			</Modal>
 		</>

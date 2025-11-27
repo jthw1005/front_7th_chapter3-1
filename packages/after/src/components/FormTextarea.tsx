@@ -1,53 +1,52 @@
-interface FormTextareaProps {
-	name: string;
-	value: string;
-	onChange: (value: string) => void;
+import * as React from 'react';
+
+interface FormTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
 	label?: string;
-	placeholder?: string;
-	required?: boolean;
-	disabled?: boolean;
 	error?: string;
 	helpText?: string;
-	rows?: number;
 }
 
-export const FormTextarea = ({
-	name,
-	value,
-	onChange,
-	label,
-	placeholder,
-	required = false,
-	disabled = false,
-	error,
-	helpText,
-	rows = 4,
-}: FormTextareaProps) => {
-	const textareaClasses = ['form-textarea', error && 'error'].filter(Boolean).join(' ');
-	const helperClasses = ['form-helper-text', error && 'error'].filter(Boolean).join(' ');
+export const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
+	({ name, label, placeholder, required = false, disabled = false, error, helpText, rows = 4, ...props }, ref) => {
+		const textareaClasses = ['form-textarea', error && 'error'].filter(Boolean).join(' ');
+		const helperClasses = ['form-helper-text', error && 'error'].filter(Boolean).join(' ');
 
-	return (
-		<div className="form-group">
-			{label && (
-				<label className="form-label">
-					{label}
-					{required && <span style={{ color: '#d32f2f' }}>*</span>}
-				</label>
-			)}
+		return (
+			<div className="form-group">
+				{label && (
+					<label htmlFor={name} className="form-label">
+						{label}
+						{required && <span style={{ color: '#d32f2f' }}>*</span>}
+					</label>
+				)}
 
-			<textarea
-				name={name}
-				value={value}
-				onChange={(e) => onChange(e.target.value)}
-				placeholder={placeholder}
-				required={required}
-				disabled={disabled}
-				rows={rows}
-				className={textareaClasses}
-			/>
+				<textarea
+					id={name}
+					name={name}
+					ref={ref}
+					placeholder={placeholder}
+					required={required}
+					disabled={disabled}
+					rows={rows}
+					className={textareaClasses}
+					aria-invalid={!!error}
+					aria-describedby={error ? `${name}-error` : helpText ? `${name}-description` : undefined}
+					{...props}
+				/>
 
-			{error && <span className={helperClasses}>{error}</span>}
-			{helpText && !error && <span className="form-helper-text">{helpText}</span>}
-		</div>
-	);
-};
+				{error && (
+					<span id={`${name}-error`} className={helperClasses}>
+						{error}
+					</span>
+				)}
+				{helpText && !error && (
+					<span id={`${name}-description`} className="form-helper-text">
+						{helpText}
+					</span>
+				)}
+			</div>
+		);
+	},
+);
+
+FormTextarea.displayName = 'FormTextarea';

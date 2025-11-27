@@ -1,13 +1,8 @@
-// import { FormInput } from '@/components/molecules';
+import { useFormContext } from 'react-hook-form';
 import { FormTextarea } from '@/components/FormTextarea';
 import { Input } from '@/components/ui/input';
 import { FormSelect, type Option } from '@/components/ui/native-select';
-import type { Post, PostFormData } from '@/types';
-
-interface PostFormFieldsProps {
-	formData: Partial<PostFormData>;
-	onChange: (data: Partial<PostFormData>) => void;
-}
+import type { PostFormSchema } from '@/schemas';
 
 const CATEGORY_OPTIONS: Option[] = [
 	{ value: 'development', label: 'Development' },
@@ -15,45 +10,46 @@ const CATEGORY_OPTIONS: Option[] = [
 	{ value: 'accessibility', label: 'Accessibility' },
 ];
 
-export const PostFormFields = ({ formData, onChange }: PostFormFieldsProps) => {
+export const PostFormFields = () => {
+	const {
+		register,
+		formState: { errors },
+	} = useFormContext<PostFormSchema>();
+
 	return (
 		<div className="space-y-4">
 			<Input
-				name="title"
-				value={formData.title || ''}
-				onChange={(value) => onChange({ ...formData, title: value })}
+				{...register('title')}
 				label="제목"
 				placeholder="게시글 제목을 입력하세요"
 				required
 				width="full"
+				error={errors.title?.message}
 			/>
 			<div className="grid grid-cols-2 gap-4">
 				<Input
-					name="author"
-					value={formData.author || ''}
-					onChange={(value) => onChange({ ...formData, author: value })}
+					{...register('author')}
 					label="작성자"
 					placeholder="작성자명"
 					required
 					width="full"
+					error={errors.author?.message}
 				/>
 				<FormSelect
-					name="category"
-					value={formData.category || ''}
-					onChange={(value) => onChange({ ...formData, category: value as Post['category'] })}
+					{...register('category')}
 					options={CATEGORY_OPTIONS}
 					label="카테고리"
 					placeholder="카테고리 선택"
 					size="md"
+					error={errors.category?.message}
 				/>
 			</div>
 			<FormTextarea
-				name="content"
-				value={formData.content || ''}
-				onChange={(value: string) => onChange({ ...formData, content: value })}
+				{...register('content')}
 				label="내용"
 				placeholder="게시글 내용을 입력하세요"
 				rows={6}
+				error={errors.content?.message}
 			/>
 		</div>
 	);

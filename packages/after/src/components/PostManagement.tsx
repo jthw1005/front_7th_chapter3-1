@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useForm, FormProvider } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import Button from '@/components/ui/button';
 import { Alert } from '@/components/Alert';
@@ -9,13 +11,15 @@ import StatusBadge from '@/components/Badge/StatusBadge';
 import CategoryBadge from '@/components/Badge/CategoryBadge';
 import { usePostManagement } from '@/hooks/usePostManagement';
 import { useAlert } from '@/hooks/useAlert';
-import { useFormModal } from '@/hooks/useFormModal';
 import DashboardCard, { statsCardVariants } from '@/components/DashboardCard';
 import { PostFormFields } from '@/components/management/PostFormFields';
+import { postFormSchema, type PostFormSchema } from '@/schemas';
 import type { VariantProps } from 'class-variance-authority';
 
 const PostManagement = () => {
 	const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
 	const {
 		posts,
@@ -30,8 +34,32 @@ const PostManagement = () => {
 	} = usePostManagement();
 
 	const alert = useAlert();
-	const createModal = useFormModal<PostFormData>();
-	const editModal = useFormModal<PostFormData>();
+
+	// Create form
+	const createForm = useForm<PostFormSchema>({
+		resolver: zodResolver(postFormSchema),
+		defaultValues: {
+			title: '',
+			content: '',
+			author: '',
+			category: 'development',
+			status: 'draft',
+		},
+		mode: 'onChange',
+	});
+
+	// Edit form
+	const editForm = useForm<PostFormSchema>({
+		resolver: zodResolver(postFormSchema),
+		defaultValues: {
+			title: '',
+			content: '',
+			author: '',
+			category: 'development',
+			status: 'draft',
+		},
+		mode: 'onChange',
+	});
 
 	useEffect(() => {
 		loadPosts();
@@ -43,18 +71,28 @@ const PostManagement = () => {
 		}
 	}, [error, alert]);
 
-	const handleCreate = async () => {
+	const handleCreateModalOpen = () => {
+		createForm.reset();
+		setIsCreateModalOpen(true);
+	};
+
+	const handleCreateModalClose = () => {
+		setIsCreateModalOpen(false);
+		createForm.reset();
+	};
+
+	const handleCreate = async (data: PostFormSchema) => {
 		try {
 			const postData: PostFormData = {
-				title: createModal.formData.title!,
-				content: createModal.formData.content || '',
-				author: createModal.formData.author!,
-				category: createModal.formData.category!,
-				status: createModal.formData.status || 'draft',
+				title: data.title,
+				content: data.content,
+				author: data.author,
+				category: data.category,
+				status: data.status,
 			};
 			await createPost(postData);
 
-			createModal.close();
+			handleCreateModalClose();
 			alert.displaySuccess('게시글이 생성되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
@@ -67,23 +105,29 @@ const PostManagement = () => {
 
 	const handleEdit = (post: Post) => {
 		setSelectedPost(post);
-		editModal.open({
+		editForm.reset({
 			title: post.title,
 			content: post.content,
 			author: post.author,
 			category: post.category,
 			status: post.status,
 		});
+		setIsEditModalOpen(true);
 	};
 
-	const handleUpdate = async () => {
+	const handleEditModalClose = () => {
+		setIsEditModalOpen(false);
+		setSelectedPost(null);
+		editForm.reset();
+	};
+
+	const handleUpdate = async (data: PostFormSchema) => {
 		if (!selectedPost) return;
 
 		try {
-			await updatePost(selectedPost.id, editModal.formData);
+			await updatePost(selectedPost.id, data);
 
-			editModal.close();
-			setSelectedPost(null);
+			handleEditModalClose();
 			alert.displaySuccess('게시글이 수정되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
@@ -237,7 +281,7 @@ const PostManagement = () => {
 	return (
 		<>
 			<div className="mb-4 text-right">
-				<Button variant="primary" size="md" onClick={() => createModal.open()}>
+				<Button variant="primary" size="md" onClick={handleCreateModalOpen}>
 					새로 만들기
 				</Button>
 			</div>
@@ -277,48 +321,40 @@ const PostManagement = () => {
 
 			{/* Create Modal */}
 			<Modal
-				isOpen={createModal.isOpen}
-				onClose={createModal.close}
+				isOpen={isCreateModalOpen}
+				onClose={handleCreateModalClose}
 				title="새 게시글 만들기"
 				size="large"
 				showFooter
 				footerContent={
 					<>
-						<Button variant="secondary" size="md" onClick={createModal.close}>
+						<Button variant="secondary" size="md" onClick={handleCreateModalClose}>
 							취소
 						</Button>
-						<Button variant="primary" size="md" onClick={handleCreate}>
+						<Button variant="primary" size="md" onClick={createForm.handleSubmit(handleCreate)}>
 							생성
 						</Button>
 					</>
 				}
 			>
-				<PostFormFields formData={createModal.formData} onChange={createModal.updateFormData} />
+				<FormProvider {...createForm}>
+					<PostFormFields />
+				</FormProvider>
 			</Modal>
 
 			{/* Edit Modal */}
 			<Modal
-				isOpen={editModal.isOpen}
-				onClose={() => {
-					editModal.close();
-					setSelectedPost(null);
-				}}
+				isOpen={isEditModalOpen}
+				onClose={handleEditModalClose}
 				title="게시글 수정"
 				size="large"
 				showFooter
 				footerContent={
 					<>
-						<Button
-							variant="secondary"
-							size="md"
-							onClick={() => {
-								editModal.close();
-								setSelectedPost(null);
-							}}
-						>
+						<Button variant="secondary" size="md" onClick={handleEditModalClose}>
 							취소
 						</Button>
-						<Button variant="primary" size="md" onClick={handleUpdate}>
+						<Button variant="primary" size="md" onClick={editForm.handleSubmit(handleUpdate)}>
 							수정 완료
 						</Button>
 					</>
@@ -332,7 +368,9 @@ const PostManagement = () => {
 						</Alert>
 					)}
 
-					<PostFormFields formData={editModal.formData} onChange={editModal.updateFormData} />
+					<FormProvider {...editForm}>
+						<PostFormFields />
+					</FormProvider>
 				</div>
 			</Modal>
 		</>

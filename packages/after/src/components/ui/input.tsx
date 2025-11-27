@@ -25,75 +25,50 @@ const inputVariants = cva(
 );
 
 export interface InputProps
-	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'width' | 'onChange' | 'onBlur'>,
+	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'width'>,
 		Omit<VariantProps<typeof inputVariants>, 'error'> {
 	label?: string;
 	error?: string;
 	helpText?: string;
-	onChange?: (value: string) => void;
-	onBlur?: (value: string) => void;
-	ref?: React.Ref<HTMLInputElement>;
 }
 
-export const Input = ({
-	className,
-	error,
-	width,
-	label,
-	helpText,
-	required,
-	name,
-	onChange,
-	onBlur,
-	ref,
-	...props
-}: InputProps) => {
-	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (onChange) {
-			onChange(e.target.value);
-		}
-	};
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+	({ className, error, width, label, helpText, required, name, ...props }, ref) => {
+		const helperClasses = cn('form-helper-text', error && 'error');
 
-	const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-		if (onBlur) {
-			onBlur(e.target.value);
-		}
-	};
+		return (
+			<div className="form-group">
+				{label && (
+					<label htmlFor={name} className="form-label">
+						{label}
+						{required && <span className="text-destructive ml-1">*</span>}
+					</label>
+				)}
 
-	const helperClasses = cn('form-helper-text', error && 'error');
+				<input
+					id={name}
+					name={name}
+					ref={ref}
+					className={cn(inputVariants({ error: !!error, width }), className)}
+					required={required}
+					aria-invalid={!!error}
+					aria-describedby={error ? `${name}-error` : helpText ? `${name}-description` : undefined}
+					{...props}
+				/>
 
-	return (
-		<div className="form-group">
-			{label && (
-				<label htmlFor={name} className="form-label">
-					{label}
-					{required && <span className="text-destructive ml-1">*</span>}
-				</label>
-			)}
+				{error && (
+					<span id={`${name}-error`} className={helperClasses}>
+						{error}
+					</span>
+				)}
+				{helpText && !error && (
+					<span id={`${name}-description`} className="form-helper-text">
+						{helpText}
+					</span>
+				)}
+			</div>
+		);
+	},
+);
 
-			<input
-				id={name}
-				name={name}
-				ref={ref}
-				className={cn(inputVariants({ error: !!error, width }), className)}
-				required={required}
-				onChange={handleChange}
-				onBlur={handleBlur}
-				aria-invalid={!!error}
-				aria-describedby={error ? `${name}-error` : helpText ? `${name}-description` : undefined}
-				{...props}
-			/>
-
-			{error && (
-				<span id={`${name}-error`} className={helperClasses}>
-					{error}
-				</span>
-			)}
-			{helpText && !error && (
-				<span id={`${name}-description`} className="form-helper-text">
-					{helpText}
-				</span>
-			)}
-		</div>
-	);
-};
+Input.displayName = 'Input';
