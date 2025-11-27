@@ -1,91 +1,84 @@
-import React, { useState, useEffect } from 'react';
-import Button from './ui/button';
-import { Alert, Table, Modal } from './organisms';
-import { FormInput } from './molecules';
-import { FormSelect } from './ui/native-select';
+import { useState, useEffect, useMemo } from 'react';
+
+import Button from '@/components/ui/button';
+import { Alert } from '@/components/Alert';
+import { Table } from '@/components/Table';
+import { Modal } from '@/components/Modal';
 import type { User, UserFormData, TableColumn, PostStatus } from '@/types';
-import DashboardCard from '@/components/DashboardCard';
+import DashboardCard, { statsCardVariants } from '@/components/DashboardCard';
 import UserRoleBadge from '@/components/Badge/UserRoleBadge';
 import StatusBadge from '@/components/Badge/StatusBadge';
 import { useUserManagement } from '@/hooks/useUserManagement';
+import { useAlert } from '@/hooks/useAlert';
+import { useFormModal } from '@/hooks/useFormModal';
+import { UserFormFields } from '@/components/management/UserFormFields';
+import type { VariantProps } from 'class-variance-authority';
 
 const UserManagement = () => {
-	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
-	const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-	const [alertMessage, setAlertMessage] = useState('');
-	const [showErrorAlert, setShowErrorAlert] = useState(false);
-	const [errorMessage, setErrorMessage] = useState('');
-	const [formData, setFormData] = useState<Partial<UserFormData>>({});
 
 	const { users, loadUsers, createUser, updateUser, deleteUser, error } = useUserManagement();
+
+	const alert = useAlert();
+	const createModal = useFormModal<UserFormData>();
+	const editModal = useFormModal<UserFormData>();
 
 	useEffect(() => {
 		loadUsers();
 	}, []);
 
-	// Show hook errors in the UI
 	useEffect(() => {
 		if (error) {
-			setErrorMessage(error);
-			setShowErrorAlert(true);
+			alert.displayError(error);
 		}
-	}, [error]);
+	}, [error, alert]);
 
 	const handleCreate = async () => {
 		try {
 			const userData: UserFormData = {
-				username: formData.username!,
-				email: formData.email!,
-				role: formData.role || 'user',
-				status: formData.status || 'active',
+				username: createModal.formData.username!,
+				email: createModal.formData.email!,
+				role: createModal.formData.role || 'user',
+				status: createModal.formData.status || 'active',
 			};
 			await createUser(userData);
 
-			setIsCreateModalOpen(false);
-			setFormData({});
-			setAlertMessage('사용자가 생성되었습니다');
-			setShowSuccessAlert(true);
+			createModal.close();
+			alert.displaySuccess('사용자가 생성되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				setErrorMessage(error.message);
+				alert.displayError(error.message);
 			} else {
-				setErrorMessage('생성에 실패했습니다');
+				alert.displayError('생성에 실패했습니다');
 			}
-			setShowErrorAlert(true);
 		}
 	};
 
 	const handleEdit = (user: User) => {
 		setSelectedUser(user);
-		setFormData({
+		editModal.open({
 			username: user.username,
 			email: user.email,
 			role: user.role,
 			status: user.status,
 		});
-		setIsEditModalOpen(true);
 	};
 
 	const handleUpdate = async () => {
 		if (!selectedUser) return;
 
 		try {
-			await updateUser(selectedUser.id, formData);
+			await updateUser(selectedUser.id, editModal.formData);
 
-			setIsEditModalOpen(false);
-			setFormData({});
+			editModal.close();
 			setSelectedUser(null);
-			setAlertMessage('사용자가 수정되었습니다');
-			setShowSuccessAlert(true);
+			alert.displaySuccess('사용자가 수정되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				setErrorMessage(error.message);
+				alert.displayError(error.message);
 			} else {
-				setErrorMessage('수정에 실패했습니다');
+				alert.displayError('수정에 실패했습니다');
 			}
-			setShowErrorAlert(true);
 		}
 	};
 
@@ -94,54 +87,15 @@ const UserManagement = () => {
 
 		try {
 			await deleteUser(id);
-			setAlertMessage('삭제되었습니다');
-			setShowSuccessAlert(true);
+			alert.displaySuccess('삭제되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				setErrorMessage(error.message);
+				alert.displayError(error.message);
 			} else {
-				setErrorMessage('삭제에 실패했습니다');
+				alert.displayError('삭제에 실패했습니다');
 			}
-			setShowErrorAlert(true);
 		}
 	};
-
-	const getStats = () => {
-		return {
-			total: users.length,
-			stat1: {
-				label: '활성',
-				value: users.filter((u) => u.status === 'active').length,
-				color: '#2e7d32',
-			},
-			stat2: {
-				label: '비활성',
-				value: users.filter((u) => u.status === 'inactive').length,
-				color: '#ed6c02',
-			},
-			stat3: {
-				label: '정지',
-				value: users.filter((u) => u.status === 'suspended').length,
-				color: '#d32f2f',
-			},
-			stat4: {
-				label: '관리자',
-				value: users.filter((u) => u.role === 'admin').length,
-				color: '#1976d2',
-			},
-		};
-	};
-
-	const columns: TableColumn<User>[] = [
-		{ key: 'id', header: 'ID', width: '60px' },
-		{ key: 'username', header: '사용자명', width: '150px' },
-		{ key: 'email', header: '이메일' },
-		{ key: 'role', header: '역할', width: '120px' },
-		{ key: 'status', header: '상태', width: '120px' },
-		{ key: 'createdAt', header: '생성일', width: '120px' },
-		{ key: 'lastLogin', header: '마지막 로그인', width: '140px' },
-		{ key: 'actions', header: '관리', width: '200px' },
-	];
 
 	const renderCell = (row: User, column: TableColumn<User>): React.ReactNode => {
 		const columnKey = column.key;
@@ -165,7 +119,7 @@ const UserManagement = () => {
 
 		if (columnKey === 'actions') {
 			return (
-				<div style={{ display: 'flex', gap: '8px' }}>
+				<div className="flex gap-2">
 					<Button size="sm" variant="primary" onClick={() => handleEdit(row)}>
 						수정
 					</Button>
@@ -179,48 +133,83 @@ const UserManagement = () => {
 		return row[columnKey];
 	};
 
-	const stats = getStats();
+	const columns: TableColumn<User>[] = [
+		{ key: 'id', header: 'ID', width: '60px' },
+		{ key: 'username', header: '사용자명', width: '150px' },
+		{ key: 'email', header: '이메일' },
+		{ key: 'role', header: '역할', width: '120px' },
+		{ key: 'status', header: '상태', width: '120px' },
+		{ key: 'createdAt', header: '생성일', width: '120px' },
+		{ key: 'lastLogin', header: '마지막 로그인', width: '140px' },
+		{ key: 'actions', header: '관리', width: '200px' },
+	];
+
+	const statList: {
+		label: string;
+		value: number;
+		color: VariantProps<typeof statsCardVariants>['color'];
+	}[] = useMemo(
+		() => [
+			{
+				label: '전체',
+				value: users.length,
+				color: 'blue',
+			},
+			{
+				label: '활성',
+				value: users.filter((u) => u.status === 'active').length,
+				color: 'green',
+			},
+			{
+				label: '비활성',
+				value: users.filter((u) => u.status === 'inactive').length,
+				color: 'orange',
+			},
+			{
+				label: '정지',
+				value: users.filter((u) => u.status === 'suspended').length,
+				color: 'red',
+			},
+			{
+				label: '관리자',
+				value: users.filter((u) => u.role === 'admin').length,
+				color: 'gray',
+			},
+		],
+		[users],
+	);
 
 	return (
 		<>
-			<div style={{ marginBottom: '15px', textAlign: 'right' }}>
-				<Button variant="primary" size="md" onClick={() => setIsCreateModalOpen(true)}>
+			<div className="mb-4 text-right">
+				<Button variant="primary" size="md" onClick={() => createModal.open()}>
 					새로 만들기
 				</Button>
 			</div>
 
-			{showSuccessAlert && (
-				<div style={{ marginBottom: '10px' }}>
-					<Alert variant="success" title="성공" onClose={() => setShowSuccessAlert(false)}>
-						{alertMessage}
+			{alert.showSuccess && (
+				<div className="mb-2.5">
+					<Alert variant="success" title="성공" onClose={alert.hideSuccess}>
+						{alert.successMessage}
 					</Alert>
 				</div>
 			)}
 
-			{showErrorAlert && (
-				<div style={{ marginBottom: '10px' }}>
-					<Alert variant="error" title="오류" onClose={() => setShowErrorAlert(false)}>
-						{errorMessage}
+			{alert.showError && (
+				<div className="mb-2.5">
+					<Alert variant="error" title="오류" onClose={alert.hideError}>
+						{alert.errorMessage}
 					</Alert>
 				</div>
 			)}
 
-			<div
-				style={{
-					display: 'grid',
-					gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-					gap: '10px',
-					marginBottom: '15px',
-				}}
-			>
-				<DashboardCard label="전체" value={stats.total} color="blue" />
-				<DashboardCard label={stats.stat1.label} value={stats.stat1.value} color="green" />
-				<DashboardCard label={stats.stat2.label} value={stats.stat2.value} color="orange" />
-				<DashboardCard label={stats.stat3.label} value={stats.stat3.value} color="red" />
-				<DashboardCard label={stats.stat4.label} value={stats.stat4.value} color="gray" />
+			<div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-2.5 mb-4">
+				{statList.map(({ label, value, color }) => {
+					return <DashboardCard key={label} label={label} value={value} color={color} />;
+				})}
 			</div>
 
-			<div style={{ border: '1px solid #ddd', background: 'white', overflow: 'auto' }}>
+			<div className="border border-gray-300 bg-white overflow-auto">
 				<Table
 					columns={columns}
 					data={users}
@@ -233,24 +222,14 @@ const UserManagement = () => {
 
 			{/* Create Modal */}
 			<Modal
-				isOpen={isCreateModalOpen}
-				onClose={() => {
-					setIsCreateModalOpen(false);
-					setFormData({});
-				}}
+				isOpen={createModal.isOpen}
+				onClose={createModal.close}
 				title="새 사용자 만들기"
 				size="large"
 				showFooter
 				footerContent={
 					<>
-						<Button
-							variant="secondary"
-							size="md"
-							onClick={() => {
-								setIsCreateModalOpen(false);
-								setFormData({});
-							}}
-						>
+						<Button variant="secondary" size="md" onClick={createModal.close}>
 							취소
 						</Button>
 						<Button variant="primary" size="md" onClick={handleCreate}>
@@ -259,63 +238,14 @@ const UserManagement = () => {
 					</>
 				}
 			>
-				<div>
-					<FormInput
-						name="username"
-						value={formData.username || ''}
-						onChange={(value) => setFormData({ ...formData, username: value })}
-						label="사용자명"
-						placeholder="사용자명을 입력하세요"
-						required
-						width="full"
-						fieldType="username"
-					/>
-					<FormInput
-						name="email"
-						value={formData.email || ''}
-						onChange={(value) => setFormData({ ...formData, email: value })}
-						label="이메일"
-						placeholder="이메일을 입력하세요"
-						type="email"
-						required
-						width="full"
-						fieldType="email"
-					/>
-					<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-						<FormSelect
-							name="role"
-							value={formData.role || 'user'}
-							onChange={(value) => setFormData({ ...formData, role: value as User['role'] })}
-							options={[
-								{ value: 'user', label: '사용자' },
-								{ value: 'moderator', label: '운영자' },
-								{ value: 'admin', label: '관리자' },
-							]}
-							label="역할"
-							size="md"
-						/>
-						<FormSelect
-							name="status"
-							value={formData.status || 'active'}
-							onChange={(value) => setFormData({ ...formData, status: value as User['status'] })}
-							options={[
-								{ value: 'active', label: '활성' },
-								{ value: 'inactive', label: '비활성' },
-								{ value: 'suspended', label: '정지' },
-							]}
-							label="상태"
-							size="md"
-						/>
-					</div>
-				</div>
+				<UserFormFields formData={createModal.formData} onChange={createModal.updateFormData} />
 			</Modal>
 
 			{/* Edit Modal */}
 			<Modal
-				isOpen={isEditModalOpen}
+				isOpen={editModal.isOpen}
 				onClose={() => {
-					setIsEditModalOpen(false);
-					setFormData({});
+					editModal.close();
 					setSelectedUser(null);
 				}}
 				title="사용자 수정"
@@ -327,8 +257,7 @@ const UserManagement = () => {
 							variant="secondary"
 							size="md"
 							onClick={() => {
-								setIsEditModalOpen(false);
-								setFormData({});
+								editModal.close();
 								setSelectedUser(null);
 							}}
 						>
@@ -340,60 +269,14 @@ const UserManagement = () => {
 					</>
 				}
 			>
-				<div>
+				<div className="space-y-4">
 					{selectedUser && (
 						<Alert variant="info">
 							ID: {selectedUser.id} | 생성일: {selectedUser.createdAt}
 						</Alert>
 					)}
 
-					<FormInput
-						name="username"
-						value={formData.username || ''}
-						onChange={(value) => setFormData({ ...formData, username: value })}
-						label="사용자명"
-						placeholder="사용자명을 입력하세요"
-						required
-						width="full"
-						fieldType="username"
-					/>
-					<FormInput
-						name="email"
-						value={formData.email || ''}
-						onChange={(value) => setFormData({ ...formData, email: value })}
-						label="이메일"
-						placeholder="이메일을 입력하세요"
-						type="email"
-						required
-						width="full"
-						fieldType="email"
-					/>
-					<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-						<FormSelect
-							name="role"
-							value={formData.role || 'user'}
-							onChange={(value) => setFormData({ ...formData, role: value as User['role'] })}
-							options={[
-								{ value: 'user', label: '사용자' },
-								{ value: 'moderator', label: '운영자' },
-								{ value: 'admin', label: '관리자' },
-							]}
-							label="역할"
-							size="md"
-						/>
-						<FormSelect
-							name="status"
-							value={formData.status || 'active'}
-							onChange={(value) => setFormData({ ...formData, status: value as User['status'] })}
-							options={[
-								{ value: 'active', label: '활성' },
-								{ value: 'inactive', label: '비활성' },
-								{ value: 'suspended', label: '정지' },
-							]}
-							label="상태"
-							size="md"
-						/>
-					</div>
+					<UserFormFields formData={editModal.formData} onChange={editModal.updateFormData} />
 				</div>
 			</Modal>
 		</>

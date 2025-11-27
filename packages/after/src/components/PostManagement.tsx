@@ -1,7 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 
 import Button from '@/components/ui/button';
-import { Alert, Table, Modal } from '@/components/organisms';
+import { Alert } from '@/components/Alert';
+import { Table } from '@/components/Table';
+import { Modal } from '@/components/Modal';
 import type { Post, PostFormData, TableColumn } from '@/types';
 import StatusBadge from '@/components/Badge/StatusBadge';
 import CategoryBadge from '@/components/Badge/CategoryBadge';
@@ -15,8 +17,17 @@ import type { VariantProps } from 'class-variance-authority';
 const PostManagement = () => {
 	const [selectedPost, setSelectedPost] = useState<Post | null>(null);
 
-	const { posts, loadPosts, createPost, updatePost, deletePost, publishPost, archivePost, restorePost, error } =
-		usePostManagement();
+	const {
+		posts,
+		loadPosts,
+		createPost,
+		updatePost,
+		deletePost,
+		publishPost,
+		archivePost,
+		restorePost,
+		error,
+	} = usePostManagement();
 
 	const alert = useAlert();
 	const createModal = useFormModal<PostFormData>();
@@ -141,17 +152,29 @@ const PostManagement = () => {
 						수정
 					</Button>
 					{row.status === 'draft' && (
-						<Button size="sm" variant="success" onClick={() => handleStatusAction(row.id, 'publish')}>
+						<Button
+							size="sm"
+							variant="success"
+							onClick={() => handleStatusAction(row.id, 'publish')}
+						>
 							게시
 						</Button>
 					)}
 					{row.status === 'published' && (
-						<Button size="sm" variant="secondary" onClick={() => handleStatusAction(row.id, 'archive')}>
+						<Button
+							size="sm"
+							variant="secondary"
+							onClick={() => handleStatusAction(row.id, 'archive')}
+						>
 							보관
 						</Button>
 					)}
 					{row.status === 'archived' && (
-						<Button size="sm" variant="primary" onClick={() => handleStatusAction(row.id, 'restore')}>
+						<Button
+							size="sm"
+							variant="primary"
+							onClick={() => handleStatusAction(row.id, 'restore')}
+						>
 							복원
 						</Button>
 					)}
@@ -242,7 +265,14 @@ const PostManagement = () => {
 			</div>
 
 			<div className="border border-gray-300 bg-white overflow-auto">
-				<Table columns={columns} data={posts} striped hover renderCell={renderCell} getRowKey={(row) => row.id} />
+				<Table
+					columns={columns}
+					data={posts}
+					striped
+					hover
+					renderCell={renderCell}
+					getRowKey={(row) => row.id}
+				/>
 			</div>
 
 			{/* Create Modal */}
@@ -297,7 +327,8 @@ const PostManagement = () => {
 				<div className="space-y-4">
 					{selectedPost && (
 						<Alert variant="info">
-							ID: {selectedPost.id} | 생성일: {selectedPost.createdAt} | 조회수: {selectedPost.views}
+							ID: {selectedPost.id} | 생성일: {selectedPost.createdAt} | 조회수:{' '}
+							{selectedPost.views}
 						</Alert>
 					)}
 
