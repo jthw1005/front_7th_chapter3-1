@@ -5,13 +5,13 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/features/shared/libs/utils';
 
 const nativeSelectVariants = cva(
-	'border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 w-full min-w-0 appearance-none rounded-md border bg-transparent px-3 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
+	'border-input placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 dark:hover:bg-input/50 w-full min-w-0 appearance-none rounded-[3px] border bg-transparent px-3 pr-9 text-sm shadow-xs transition-[color,box-shadow] outline-none disabled:pointer-events-none disabled:cursor-not-allowed focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border-gray-300',
 	{
 		variants: {
 			size: {
-				sm: 'h-8 py-1 text-xs',
-				md: 'h-9 py-2 text-sm',
-				lg: 'h-10 py-2 text-base',
+				sm: 'h-[36px] py-1 text-xs',
+				md: 'h-[42px] py-2 text-sm',
+				lg: 'h-[48px] py-2 text-base',
 			},
 		},
 		defaultVariants: {
@@ -52,91 +52,4 @@ function NativeSelectOptGroup({ className, ...props }: React.ComponentProps<'opt
 	return <optgroup data-slot="native-select-optgroup" className={cn(className)} {...props} />;
 }
 
-// FormSelect wrapper - Compatible with FormInput API
-interface Option {
-	value: string;
-	label: string;
-}
-
-interface FormSelectProps extends VariantProps<typeof nativeSelectVariants> {
-	name: string;
-	options: Option[];
-	label?: string;
-	placeholder?: string;
-	required?: boolean;
-	disabled?: boolean;
-	error?: string;
-	helpText?: string;
-	className?: string;
-}
-
-const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
-	(
-		{
-			name,
-			options,
-			label,
-			placeholder = 'Select an option...',
-			required = false,
-			disabled = false,
-			error,
-			helpText,
-			size = 'md',
-			className,
-			...props
-		},
-		ref,
-	) => {
-		return (
-			<div className="space-y-2">
-				{label && (
-					<label
-						htmlFor={name}
-						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-					>
-						{label}
-						{required && <span className="text-destructive ml-1">*</span>}
-					</label>
-				)}
-
-				<NativeSelect
-					ref={ref}
-					id={name}
-					name={name}
-					required={required}
-					disabled={disabled}
-					aria-invalid={!!error}
-					aria-describedby={error ? `${name}-error` : helpText ? `${name}-description` : undefined}
-					size={size}
-					className={className}
-					{...props}
-				>
-					<NativeSelectOption value="" disabled>
-						{placeholder}
-					</NativeSelectOption>
-					{options.map((option) => (
-						<NativeSelectOption key={option.value} value={option.value}>
-							{option.label}
-						</NativeSelectOption>
-					))}
-				</NativeSelect>
-
-				{error && (
-					<p id={`${name}-error`} className="text-sm text-destructive">
-						{error}
-					</p>
-				)}
-				{helpText && !error && (
-					<p id={`${name}-description`} className="text-sm text-muted-foreground">
-						{helpText}
-					</p>
-				)}
-			</div>
-		);
-	},
-);
-
-FormSelect.displayName = 'FormSelect';
-
-export { NativeSelect, NativeSelectOptGroup, NativeSelectOption, FormSelect, nativeSelectVariants };
-export type { NativeSelectProps, FormSelectProps, Option };
+export { NativeSelect, NativeSelectOptGroup, NativeSelectOption, nativeSelectVariants };

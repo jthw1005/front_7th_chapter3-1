@@ -116,6 +116,7 @@ export const Button2: Story = {
 };
 
 export const AllHeadings: Story = {
+	args: {},
 	render: () => (
 		<div className="space-y-4">
 			<Text textType="heading1">Heading 1 - 24px Bold</Text>
@@ -129,6 +130,7 @@ export const AllHeadings: Story = {
 };
 
 export const AllSubHeadings: Story = {
+	args: {},
 	render: () => (
 		<div className="space-y-4">
 			<Text textType="subHeading1">SubHeading 1 - 28px Medium</Text>
@@ -139,6 +141,7 @@ export const AllSubHeadings: Story = {
 };
 
 export const AllBodyText: Story = {
+	args: {},
 	render: () => (
 		<div className="space-y-4">
 			<Text textType="title1">Title 1 - 16px Bold</Text>
@@ -152,6 +155,7 @@ export const AllBodyText: Story = {
 };
 
 export const TypographyScale: Story = {
+	args: {},
 	render: () => (
 		<div className="space-y-6">
 			<div className="border-b pb-4">

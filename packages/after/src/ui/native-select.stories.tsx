@@ -1,10 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import {
-	NativeSelect,
-	NativeSelectOption,
-	NativeSelectOptGroup,
-	FormSelect,
-} from './native-select';
+import { NativeSelect, NativeSelectOption, NativeSelectOptGroup } from './native-select';
 
 const meta = {
 	title: 'UI/NativeSelect',
@@ -149,47 +144,6 @@ export const CustomNativeSelect: Story = {
 					<NativeSelectOption value="cn">China</NativeSelectOption>
 				</NativeSelectOptGroup>
 			</NativeSelect>
-		</div>
-	),
-};
-
-export const AllStates: Story = {
-	render: () => (
-		<div className="flex flex-col gap-4 max-w-lg">
-			<FormSelect
-				name="normal"
-				label="Normal Select"
-				options={sampleOptions}
-				placeholder="Select..."
-			/>
-			<FormSelect
-				name="required"
-				label="Required Select"
-				options={sampleOptions}
-				placeholder="Required"
-				required
-			/>
-			<FormSelect
-				name="error"
-				label="Select with Error"
-				options={sampleOptions}
-				placeholder="Error state"
-				error="This field is required"
-			/>
-			<FormSelect
-				name="help"
-				label="Select with Help Text"
-				options={sampleOptions}
-				placeholder="With help"
-				helpText="This is a helpful message"
-			/>
-			<FormSelect
-				name="disabled"
-				label="Disabled Select"
-				options={sampleOptions}
-				placeholder="Cannot select"
-				disabled
-			/>
 		</div>
 	),
 };

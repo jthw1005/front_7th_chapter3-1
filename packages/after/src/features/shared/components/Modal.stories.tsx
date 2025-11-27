@@ -31,6 +31,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
+	args: {},
 	render: () => {
 		const [isOpen, setIsOpen] = useState(false);
 
@@ -46,6 +47,7 @@ export const Default: Story = {
 };
 
 export const Small: Story = {
+	args: {},
 	render: () => {
 		const [isOpen, setIsOpen] = useState(false);
 
@@ -61,6 +63,7 @@ export const Small: Story = {
 };
 
 export const Medium: Story = {
+	args: {},
 	render: () => {
 		const [isOpen, setIsOpen] = useState(false);
 
@@ -79,6 +82,7 @@ export const Medium: Story = {
 };
 
 export const Large: Story = {
+	args: {},
 	render: () => {
 		const [isOpen, setIsOpen] = useState(false);
 
@@ -94,6 +98,7 @@ export const Large: Story = {
 };
 
 export const WithFooter: Story = {
+	args: {},
 	render: () => {
 		const [isOpen, setIsOpen] = useState(false);
 
@@ -124,6 +129,7 @@ export const WithFooter: Story = {
 };
 
 export const WithoutTitle: Story = {
+	args: {},
 	render: () => {
 		const [isOpen, setIsOpen] = useState(false);
 
@@ -142,6 +148,7 @@ export const WithoutTitle: Story = {
 };
 
 export const LongContent: Story = {
+	args: {},
 	render: () => {
 		const [isOpen, setIsOpen] = useState(false);
 
@@ -182,6 +189,7 @@ export const LongContent: Story = {
 };
 
 export const FormModal: Story = {
+	args: {},
 	render: () => {
 		const [isOpen, setIsOpen] = useState(false);
 

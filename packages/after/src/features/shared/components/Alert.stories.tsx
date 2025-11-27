@@ -93,6 +93,7 @@ export const LongContent: Story = {
 };
 
 export const AllVariants: Story = {
+	args: {},
 	render: () => (
 		<div className="space-y-4">
 			<Alert variant="default">This is a default alert message.</Alert>
@@ -105,6 +106,7 @@ export const AllVariants: Story = {
 };
 
 export const AllWithTitles: Story = {
+	args: {},
 	render: () => (
 		<div className="space-y-4">
 			<Alert variant="default" title="Default">
@@ -127,6 +129,7 @@ export const AllWithTitles: Story = {
 };
 
 export const Dismissible: Story = {
+	args: {},
 	render: () => {
 		const handleClose = () => console.log('Alert dismissed');
 		return (
@@ -149,6 +152,7 @@ export const Dismissible: Story = {
 };
 
 export const ComplexContent: Story = {
+	args: {},
 	render: () => (
 		<div className="space-y-4">
 			<Alert variant="info" title="System Update Available">

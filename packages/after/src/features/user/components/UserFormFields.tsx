@@ -1,6 +1,6 @@
 import { useFormContext } from 'react-hook-form';
 import { Input } from '@/ui/input';
-import { FormSelect, type Option } from '@/ui/native-select';
+import { FormSelect, type Option } from '@/features/shared/components/FormSelect';
 import type { UserFormSchema } from '@/features/user/schemas';
 
 const ROLE_OPTIONS: Option[] = [

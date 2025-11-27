@@ -12,7 +12,7 @@ export const Header = () => {
 						<h1 className="text-lg font-bold text-gray-900 dark:text-gray-100 m-0 leading-none">
 							Hanghae Company
 						</h1>
-						<p className="text-[11px] text-gray-600 dark:text-gray-400 m-0 leading-none mt-0.5">
+						<p className="text-xs text-gray-600 dark:text-gray-400 m-0 leading-none mt-0.5">
 							Design System Migration Project
 						</p>
 					</div>

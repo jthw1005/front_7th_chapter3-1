@@ -2,7 +2,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/features/shared/libs/utils';
 
 const alertVariants = cva(
-	'py-2.5 px-3 mb-4 rounded-[3px] border font-sans flex gap-2 items-start',
+	'py-2 px-3 mb-4 rounded-[3px] border font-sans flex gap-2 items-start',
 	{
 		variants: {
 			variant: {

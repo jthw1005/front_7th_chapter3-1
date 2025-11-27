@@ -16,6 +16,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {};
 
 export const WithContent: Story = {
+	args: {},
 	render: () => (
 		<div>
 			<Header />
@@ -39,6 +40,7 @@ export const WithContent: Story = {
 };
 
 export const DarkMode: Story = {
+	args: {},
 	render: () => (
 		<div className="dark">
 			<div className="bg-gray-900 min-h-screen">
@@ -53,6 +55,7 @@ export const DarkMode: Story = {
 };
 
 export const InContext: Story = {
+	args: {},
 	render: () => (
 		<div className="min-h-screen bg-gray-50 dark:bg-gray-900">
 			<Header />

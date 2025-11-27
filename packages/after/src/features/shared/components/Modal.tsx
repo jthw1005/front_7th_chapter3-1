@@ -51,7 +51,7 @@ export const Modal = ({
 					<div className="px-6 py-4 border-b border-black/12 dark:border-white/12 flex justify-between items-center">
 						<h3 className="m-0 text-xl font-medium text-black/87 dark:text-white/87">{title}</h3>
 						<button
-							className="bg-transparent border-none text-[28px] leading-none text-black/54 dark:text-white/54 cursor-pointer p-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-black/4 dark:hover:bg-white/4"
+							className="bg-transparent border-none text-2xl leading-none text-black/54 dark:text-white/54 cursor-pointer p-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:bg-black/4 dark:hover:bg-white/4"
 							onClick={onClose}
 						>
 							×

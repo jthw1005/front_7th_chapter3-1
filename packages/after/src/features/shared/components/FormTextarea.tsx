@@ -24,7 +24,7 @@ export const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaPr
 		ref,
 	) => {
 		const textareaClasses = cn(
-			'w-full min-h-24 py-[16.5px] px-[14px] text-base font-normal',
+			'w-full min-h-24 py-4 px-3.5 text-base font-normal',
 			'text-black/[0.87] dark:text-white/[0.87]',
 			'border border-black/[0.23] dark:border-white/[0.23] rounded',
 			'bg-white dark:bg-gray-700 box-border',

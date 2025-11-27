@@ -99,6 +99,7 @@ export const SmallRows: Story = {
 };
 
 export const AllStates: Story = {
+	args: {},
 	render: () => (
 		<div className="flex flex-col gap-4 max-w-lg">
 			<FormTextarea
@@ -131,6 +132,7 @@ export const AllStates: Story = {
 };
 
 export const FormExample: Story = {
+	args: {},
 	render: () => (
 		<div className="max-w-2xl">
 			<h2 className="text-2xl font-bold mb-6">Feedback Form</h2>
@@ -161,6 +163,7 @@ export const FormExample: Story = {
 };
 
 export const CharacterCount: Story = {
+	args: {},
 	render: () => {
 		const [value, setValue] = useState('');
 		const maxLength = 200;

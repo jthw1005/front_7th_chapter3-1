@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form';
 import { FormTextarea } from '@/features/shared/components/FormTextarea';
 import { Input } from '@/ui/input';
-import { FormSelect, type Option } from '@/ui/native-select';
+import { FormSelect, type Option } from '@/features/shared/components/FormSelect';
 import type { PostFormSchema } from '@/features/post/schemas';
 
 const CATEGORY_OPTIONS: Option[] = [
