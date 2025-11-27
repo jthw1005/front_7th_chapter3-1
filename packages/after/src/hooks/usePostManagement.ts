@@ -26,78 +26,124 @@ export const usePostManagement = (): UsePostManagementReturn => {
 		try {
 			const data = await postService.getAll();
 			setPosts(data);
-		} catch (err: any) {
-			setError(err.message || '게시글 데이터를 불러오는데 실패했습니다');
+		} catch (err: unknown) {
+			if (err instanceof Error) {
+				setError(err.message);
+			} else {
+				setError('게시글 데이터를 불러오는데 실패했습니다');
+			}
 		} finally {
 			setIsLoading(false);
 		}
 	}, []);
 
-	const createPost = useCallback(async (postData: PostFormData) => {
-		setError(null);
-		try {
-			await postService.create(postData);
-			await loadPosts();
-		} catch (err: any) {
-			setError(err.message || '게시글 생성에 실패했습니다');
-			throw err;
-		}
-	}, [loadPosts]);
+	const createPost = useCallback(
+		async (postData: PostFormData) => {
+			setError(null);
+			try {
+				await postService.create(postData);
+				await loadPosts();
+			} catch (err: unknown) {
+				if (err instanceof Error) {
+					setError(err.message);
+				} else {
+					setError('게시글 생성에 실패했습니다');
+				}
+				throw err;
+			}
+		},
+		[loadPosts],
+	);
 
-	const updatePost = useCallback(async (id: number, postData: Partial<PostFormData>) => {
-		setError(null);
-		try {
-			await postService.update(id, postData);
-			await loadPosts();
-		} catch (err: any) {
-			setError(err.message || '게시글 수정에 실패했습니다');
-			throw err;
-		}
-	}, [loadPosts]);
+	const updatePost = useCallback(
+		async (id: number, postData: Partial<PostFormData>) => {
+			setError(null);
+			try {
+				await postService.update(id, postData);
+				await loadPosts();
+			} catch (err: unknown) {
+				if (err instanceof Error) {
+					setError(err.message);
+				} else {
+					setError('게시글 수정에 실패했습니다');
+				}
+				throw err;
+			}
+		},
+		[loadPosts],
+	);
 
-	const deletePost = useCallback(async (id: number) => {
-		setError(null);
-		try {
-			await postService.delete(id);
-			await loadPosts();
-		} catch (err: any) {
-			setError(err.message || '게시글 삭제에 실패했습니다');
-			throw err;
-		}
-	}, [loadPosts]);
+	const deletePost = useCallback(
+		async (id: number) => {
+			setError(null);
+			try {
+				await postService.delete(id);
+				await loadPosts();
+			} catch (err: unknown) {
+				if (err instanceof Error) {
+					setError(err.message);
+				} else {
+					setError('게시글 삭제에 실패했습니다');
+				}
+				throw err;
+			}
+		},
+		[loadPosts],
+	);
 
-	const publishPost = useCallback(async (id: number) => {
-		setError(null);
-		try {
-			await postService.publish(id);
-			await loadPosts();
-		} catch (err: any) {
-			setError(err.message || '게시글 게시에 실패했습니다');
-			throw err;
-		}
-	}, [loadPosts]);
+	const publishPost = useCallback(
+		async (id: number) => {
+			setError(null);
+			try {
+				await postService.publish(id);
+				await loadPosts();
+			} catch (err: unknown) {
+				if (err instanceof Error) {
+					setError(err.message);
+				} else {
+					setError('게시글 게시에 실패했습니다');
+				}
+				throw err;
+			}
+		},
+		[loadPosts],
+	);
 
-	const archivePost = useCallback(async (id: number) => {
-		setError(null);
-		try {
-			await postService.archive(id);
-			await loadPosts();
-		} catch (err: any) {
-			setError(err.message || '게시글 보관에 실패했습니다');
-			throw err;
-		}
-	}, [loadPosts]);
+	const archivePost = useCallback(
+		async (id: number) => {
+			setError(null);
+			try {
+				await postService.archive(id);
+				await loadPosts();
+			} catch (err: unknown) {
+				if (err instanceof Error) {
+					setError(err.message);
+				} else {
+					setError('게시글 보관에 실패했습니다');
+				}
+				throw err;
+			}
+		},
+		[loadPosts],
+	);
 
-	const restorePost = useCallback(async (id: number) => {
-		setError(null);
-		try {
-			await postService.restore(id);
-			await loadPosts();
-		} catch (err: any) {
-			setError(err.message || '게시글 복원에 실패했습니다');
-			throw err;
-		}
-	}, [loadPosts]);
+	const restorePost = useCallback(
+		async (id: number) => {
+			setError(null);
+			try {
+				await postService.restore(id);
+				await loadPosts();
+			} catch (err: unknown) {
+				if (err instanceof Error) {
+					setError(err.message);
+				} else {
+					setError('게시글 복원에 실패했습니다');
+				}
+				throw err;
+			}
+		},
+		[loadPosts],
+	);
 
 	return {
 		posts,

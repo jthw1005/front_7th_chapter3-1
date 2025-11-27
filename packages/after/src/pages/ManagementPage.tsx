@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import Button from '../components/ui/button';
-import UserManagement from '../components/UserManagement';
-import PostManagement from '../components/PostManagement';
+
+import Button from '@/components/ui/button';
+import PostManagement from '@/components/PostManagement';
+import UserManagement from '@/components/UserManagement';
+import Text from '@/components/Text';
 import type { EntityType } from '@/types';
-import '../styles/components.css';
 
 const ManagementPage = () => {
 	const [entityType, setEntityType] = useState<EntityType>('post');
@@ -12,8 +13,12 @@ const ManagementPage = () => {
 		<div className="min-h-screen bg-gray-100">
 			<div className="max-w-[1200px] mx-auto p-5">
 				<div className="mb-5">
-					<h1 className="text-2xl font-bold mb-1 text-gray-800">관리 시스템</h1>
-					<p className="text-sm text-gray-600">사용자와 게시글을 관리하세요</p>
+					<Text textType="heading1" className="text-gray-800">
+						관리 시스템
+					</Text>
+					<Text textType="body2" className="text-gray-600">
+						사용자와 게시글을 관리하세요
+					</Text>
 				</div>
 
 				<div className="bg-white border border-gray-300 p-2.5">

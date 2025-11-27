@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import Button from './ui/button';
-import { Alert, Table, Modal } from './organisms';
-import { FormInput, FormTextarea } from './molecules';
-import { FormSelect } from './ui/native-select';
+
+import Button from '@/components/ui/button';
+import { Alert, Table, Modal } from '@/components/organisms';
+import { FormInput, FormTextarea } from '@/components/molecules';
+import { FormSelect } from '@/components/ui/native-select';
 import type { Post, PostFormData, TableColumn } from '@/types';
 import StatusBadge from '@/components/Badge/StatusBadge';
 import CategoryBadge from '@/components/Badge/CategoryBadge';
 import { usePostManagement } from '@/hooks/usePostManagement';
-import DashboardCard from '@/components/DashboardCard';
+import DashboardCard, { statsCardVariants } from '@/components/DashboardCard';
+import type { VariantProps } from 'class-variance-authority';
 
 const PostManagement = () => {
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -35,7 +37,6 @@ const PostManagement = () => {
 		loadPosts();
 	}, []);
 
-	// Show hook errors in the UI
 	useEffect(() => {
 		if (error) {
 			setErrorMessage(error);
@@ -141,43 +142,6 @@ const PostManagement = () => {
 		}
 	};
 
-	const getStats = () => {
-		return {
-			total: posts.length,
-			stat1: {
-				label: '게시됨',
-				value: posts.filter((p) => p.status === 'published').length,
-				color: '#2e7d32',
-			},
-			stat2: {
-				label: '임시저장',
-				value: posts.filter((p) => p.status === 'draft').length,
-				color: '#ed6c02',
-			},
-			stat3: {
-				label: '보관됨',
-				value: posts.filter((p) => p.status === 'archived').length,
-				color: 'rgba(0, 0, 0, 0.6)',
-			},
-			stat4: {
-				label: '총 조회수',
-				value: posts.reduce((sum, p) => sum + p.views, 0),
-				color: '#1976d2',
-			},
-		};
-	};
-
-	const columns: TableColumn<Post>[] = [
-		{ key: 'id', header: 'ID', width: '60px' },
-		{ key: 'title', header: '제목' },
-		{ key: 'author', header: '작성자', width: '120px' },
-		{ key: 'category', header: '카테고리', width: '140px' },
-		{ key: 'status', header: '상태', width: '120px' },
-		{ key: 'views', header: '조회수', width: '100px' },
-		{ key: 'createdAt', header: '작성일', width: '120px' },
-		{ key: 'actions', header: '관리', width: '250px' },
-	];
-
 	const renderCell = (row: Post, column: TableColumn<Post>): React.ReactNode => {
 		const columnKey = column.key;
 
@@ -236,7 +200,48 @@ const PostManagement = () => {
 		return row[columnKey];
 	};
 
-	const stats = getStats();
+	const columns: TableColumn<Post>[] = [
+		{ key: 'id', header: 'ID', width: '60px' },
+		{ key: 'title', header: '제목' },
+		{ key: 'author', header: '작성자', width: '120px' },
+		{ key: 'category', header: '카테고리', width: '140px' },
+		{ key: 'status', header: '상태', width: '120px' },
+		{ key: 'views', header: '조회수', width: '100px' },
+		{ key: 'createdAt', header: '작성일', width: '120px' },
+		{ key: 'actions', header: '관리', width: '250px' },
+	];
+
+	const statList: {
+		label: string;
+		value: number;
+		color: VariantProps<typeof statsCardVariants>['color'];
+	}[] = [
+		{
+			label: '전체',
+			value: posts.length,
+			color: 'blue',
+		},
+		{
+			label: '게시됨',
+			value: posts.filter((p) => p.status === 'published').length,
+			color: 'green',
+		},
+		{
+			label: '임시저장',
+			value: posts.filter((p) => p.status === 'draft').length,
+			color: 'orange',
+		},
+		{
+			label: '보관됨',
+			value: posts.filter((p) => p.status === 'archived').length,
+			color: 'red',
+		},
+		{
+			label: '총 조회수',
+			value: posts.reduce((sum, p) => sum + p.views, 0),
+			color: 'gray',
+		},
+	];
 
 	return (
 		<>
@@ -270,11 +275,9 @@ const PostManagement = () => {
 					marginBottom: '15px',
 				}}
 			>
-				<DashboardCard label="전체" value={stats.total} color="blue" />
-				<DashboardCard label={stats.stat1.label} value={stats.stat1.value} color="green" />
-				<DashboardCard label={stats.stat2.label} value={stats.stat2.value} color="orange" />
-				<DashboardCard label={stats.stat3.label} value={stats.stat3.value} color="red" />
-				<DashboardCard label={stats.stat4.label} value={stats.stat4.value} color="gray" />
+				{statList.map(({ label, value, color }) => {
+					return <DashboardCard label={label} value={value} color={color} />;
+				})}
 			</div>
 
 			<div style={{ border: '1px solid #ddd', background: 'white', overflow: 'auto' }}>

@@ -1,7 +1,7 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-const statsCardVariants = cva('p-3 border rounded-sm', {
+export const statsCardVariants = cva('p-3 border rounded-sm', {
 	variants: {
 		color: {
 			blue: 'bg-primary-50 border-primary-300 text-primary-500',

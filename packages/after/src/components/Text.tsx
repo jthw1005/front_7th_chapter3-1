@@ -51,12 +51,12 @@ const elementMap: Record<TextType, keyof JSX.IntrinsicElements> = {
 export const textVariants = cva('box-border', {
 	variants: {
 		type: {
-			heading1: 'text-[40px] font-[700] -tracking-[0.8px]',
-			heading2: 'text-[36px] font-[700] -tracking-[0.72px]',
-			heading3: 'text-[28px] font-[700] -tracking-[0.56px]',
-			heading4: 'text-[24px] font-[700] -tracking-[0.48px]',
-			heading5: 'text-[20px] font-[700] -tracking-[0.4px]',
-			heading6: 'text-[18px] font-[700] -tracking-[0.36px]',
+			heading1: 'text-[24px] font-[700] -tracking-[0.8px]',
+			heading2: 'text-[20px] font-[700] -tracking-[0.72px]',
+			heading3: 'text-[18px] font-[700] -tracking-[0.56px]',
+			heading4: 'text-[16px] font-[700] -tracking-[0.48px]',
+			heading5: 'text-[16px] font-[700] -tracking-[0.4px]',
+			heading6: 'text-[16px] font-[700] -tracking-[0.36px]',
 			subHeading1: 'text-[28px] font-[500] -tracking-[0.56px]',
 			subHeading2: 'text-[20px] font-[500] -tracking-[0.4px]',
 			subHeading3: 'text-[18px] font-[500] -tracking-[0.36px]',

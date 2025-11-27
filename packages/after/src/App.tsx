@@ -1,10 +1,10 @@
-import { Header } from './components/organisms';
-import ManagementPage from './pages/ManagementPage';
-import './styles/components.css';
+import { Header } from '@/components/organisms/Header';
+import ManagementPage from '@/pages/ManagementPage';
+import '@/styles/components.css';
 
 export const App = () => {
 	return (
-		<div style={{ minHeight: '100vh', backgroundColor: '#f7fafc' }}>
+		<div className="min-h-screen bg-gray-100">
 			<Header />
 			<main>
 				<ManagementPage />
