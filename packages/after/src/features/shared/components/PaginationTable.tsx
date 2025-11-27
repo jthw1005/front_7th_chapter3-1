@@ -86,10 +86,8 @@ const PaginationTable = <T extends Record<string, any>>({
 	const totalPages = Math.ceil(filteredData.length / pageSize);
 
 	const tableClasses = cn(
-		'table',
-		striped && 'table-striped',
-		bordered && 'table-bordered',
-		hover && 'table-hover',
+		'w-full border-collapse text-sm bg-white dark:bg-gray-800',
+		bordered && 'border border-gray-200 dark:border-gray-700',
 		className,
 	);
 
@@ -102,7 +100,7 @@ const PaginationTable = <T extends Record<string, any>>({
 	};
 
 	return (
-		<div className="table-container">
+		<div className="overflow-x-auto">
 			{searchable && (
 				<div className="mb-4">
 					<input
@@ -116,14 +114,18 @@ const PaginationTable = <T extends Record<string, any>>({
 			)}
 
 			<table className={tableClasses}>
-				<TableHeader>
+				<TableHeader className="bg-gray-50 dark:bg-gray-700">
 					<TableRow>
 						{columns.map((column) => (
 							<TableHead
 								key={String(column.key)}
 								style={column.width ? { width: column.width } : undefined}
 								onClick={() => sortable && column.sortable !== false && handleSort(column.key)}
-								className={sortable && column.sortable !== false ? 'cursor-pointer' : ''}
+								className={cn(
+									'p-4 text-left font-medium text-xs text-black/60 dark:text-white/70 uppercase tracking-wide border-b-2 border-black/12 dark:border-white/12',
+									sortable && column.sortable !== false ? 'cursor-pointer' : '',
+									bordered && 'border border-black/12 dark:border-white/12',
+								)}
 							>
 								<div className="flex items-center gap-1">
 									{column.header}
@@ -140,10 +142,20 @@ const PaginationTable = <T extends Record<string, any>>({
 						<TableRow
 							key={getRowKey(row, rowIndex)}
 							onClick={() => onRowClick?.(row)}
-							className={onRowClick ? 'cursor-pointer' : ''}
+							className={cn(
+								onRowClick ? 'cursor-pointer' : '',
+								striped && rowIndex % 2 === 1 && 'bg-gray-50 dark:bg-gray-700/50',
+								hover && 'hover:bg-black/4 dark:hover:bg-white/4',
+							)}
 						>
 							{columns.map((column) => (
-								<TableCell key={String(column.key)}>
+								<TableCell
+									key={String(column.key)}
+									className={cn(
+										'p-4 text-black/87 dark:text-white/87 border-b border-black/8 dark:border-white/8',
+										bordered && 'border border-black/12 dark:border-white/12',
+									)}
+								>
 									{renderCell ? renderCell(row, column) : defaultRenderCell(row, column)}
 								</TableCell>
 							))}
