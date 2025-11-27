@@ -10,13 +10,13 @@ const buttonVariants = cva(
 		variants: {
 			variant: {
 				primary:
-					'bg-primary-500 text-white border-primary-600 hover:bg-primary-600 hover:disabled:bg-primary-500',
+					'bg-primary-500 dark:bg-primary-600 text-white border-primary-600 dark:border-primary-700 hover:bg-primary-600 dark:hover:bg-primary-700 hover:disabled:bg-primary-500 dark:hover:disabled:bg-primary-600',
 				secondary:
-					'bg-secondary-100 text-gray-800 border-secondary-300 hover:bg-secondary-200 hover:disabled:bg-secondary-100',
+					'bg-secondary-100 dark:bg-gray-600 text-gray-800 dark:text-gray-100 border-secondary-300 dark:border-gray-500 hover:bg-secondary-200 dark:hover:bg-gray-500 hover:disabled:bg-secondary-100 dark:hover:disabled:bg-gray-600',
 				danger:
-					'bg-danger-500 text-white border-danger-600 hover:bg-danger-600 hover:disabled:bg-danger-500',
+					'bg-danger-500 dark:bg-danger-600 text-white border-danger-600 dark:border-danger-700 hover:bg-danger-600 dark:hover:bg-danger-700 hover:disabled:bg-danger-500 dark:hover:disabled:bg-danger-600',
 				success:
-					'bg-success-500 text-white border-success-600 hover:bg-success-600 hover:disabled:bg-success-500',
+					'bg-success-500 dark:bg-success-600 text-white border-success-600 dark:border-success-700 hover:bg-success-600 dark:hover:bg-success-700 hover:disabled:bg-success-500 dark:hover:disabled:bg-success-600',
 			},
 			size: {
 				sm: 'px-3 py-1.5 text-sm',

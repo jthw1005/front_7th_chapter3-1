@@ -253,7 +253,7 @@ const UserManagement = () => {
 				})}
 			</div>
 
-			<div className="border border-gray-300 bg-white overflow-auto">
+			<div className="border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-auto">
 				<PaginationTable
 					columns={columns}
 					data={users}

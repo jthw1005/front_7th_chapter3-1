@@ -108,13 +108,13 @@ const PaginationTable = <T extends Record<string, any>>({
 						placeholder="검색..."
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
-						className="px-3 py-2 border border-gray-300 rounded w-[300px]"
+						className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded w-[300px] bg-white dark:bg-gray-700 text-black dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
 					/>
 				</div>
 			)}
 
 			<table className={tableClasses}>
-				<TableHeader className="bg-gray-50 dark:bg-gray-700">
+				<TableHeader className="bg-gray-50 dark:bg-gray-900">
 					<TableRow>
 						{columns.map((column) => (
 							<TableHead
@@ -122,7 +122,7 @@ const PaginationTable = <T extends Record<string, any>>({
 								style={column.width ? { width: column.width } : undefined}
 								onClick={() => sortable && column.sortable !== false && handleSort(column.key)}
 								className={cn(
-									'p-4 text-left font-medium text-xs text-black/60 dark:text-white/70 uppercase tracking-wide border-b-2 border-black/12 dark:border-white/12',
+									'p-4 text-left font-medium text-xs text-black/60 dark:text-gray-600 uppercase tracking-wide border-b-2 border-black/12 dark:border-white/12',
 									sortable && column.sortable !== false ? 'cursor-pointer' : '',
 									bordered && 'border border-black/12 dark:border-white/12',
 								)}
@@ -144,15 +144,15 @@ const PaginationTable = <T extends Record<string, any>>({
 							onClick={() => onRowClick?.(row)}
 							className={cn(
 								onRowClick ? 'cursor-pointer' : '',
-								striped && rowIndex % 2 === 1 && 'bg-gray-50 dark:bg-gray-700/50',
-								hover && 'hover:bg-black/4 dark:hover:bg-white/4',
+								striped && rowIndex % 2 === 1 && 'bg-gray-50 dark:bg-gray-900',
+								hover && 'hover:bg-black/4 dark:hover:bg-blue-800',
 							)}
 						>
 							{columns.map((column) => (
 								<TableCell
 									key={String(column.key)}
 									className={cn(
-										'p-4 text-black/87 dark:text-white/87 border-b border-black/8 dark:border-white/8',
+										'p-4 text-black/87 dark:text-gray-600 border-b border-black/8 dark:border-white/8',
 										bordered && 'border border-black/12 dark:border-white/12',
 									)}
 								>
@@ -169,17 +169,17 @@ const PaginationTable = <T extends Record<string, any>>({
 					<button
 						onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
 						disabled={currentPage === 1}
-						className="px-3 py-1.5 border border-gray-300 bg-white rounded disabled:cursor-not-allowed disabled:opacity-50"
+						className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-600"
 					>
 						이전
 					</button>
-					<span className="px-3 py-1.5">
+					<span className="px-3 py-1.5 text-black dark:text-white">
 						{currentPage} / {totalPages}
 					</span>
 					<button
 						onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
 						disabled={currentPage === totalPages}
-						className="px-3 py-1.5 border border-gray-300 bg-white rounded disabled:cursor-not-allowed disabled:opacity-50"
+						className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-black dark:text-white rounded disabled:cursor-not-allowed disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-gray-600"
 					>
 						다음
 					</button>
