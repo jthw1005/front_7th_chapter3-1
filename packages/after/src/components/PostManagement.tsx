@@ -1,37 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import Button from '@/components/ui/button';
 import { Alert, Table, Modal } from '@/components/organisms';
-import { FormInput, FormTextarea } from '@/components/molecules';
-import { FormSelect } from '@/components/ui/native-select';
 import type { Post, PostFormData, TableColumn } from '@/types';
 import StatusBadge from '@/components/Badge/StatusBadge';
 import CategoryBadge from '@/components/Badge/CategoryBadge';
 import { usePostManagement } from '@/hooks/usePostManagement';
+import { useAlert } from '@/hooks/useAlert';
+import { useFormModal } from '@/hooks/useFormModal';
 import DashboardCard, { statsCardVariants } from '@/components/DashboardCard';
+import { PostFormFields } from '@/components/management/PostFormFields';
 import type { VariantProps } from 'class-variance-authority';
 
 const PostManagement = () => {
-	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-	const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-	const [alertMessage, setAlertMessage] = useState('');
-	const [showErrorAlert, setShowErrorAlert] = useState(false);
-	const [errorMessage, setErrorMessage] = useState('');
-	const [formData, setFormData] = useState<Partial<PostFormData>>({});
 
-	const {
-		posts,
-		loadPosts,
-		createPost,
-		updatePost,
-		deletePost,
-		publishPost,
-		archivePost,
-		restorePost,
-		error,
-	} = usePostManagement();
+	const { posts, loadPosts, createPost, updatePost, deletePost, publishPost, archivePost, restorePost, error } =
+		usePostManagement();
+
+	const alert = useAlert();
+	const createModal = useFormModal<PostFormData>();
+	const editModal = useFormModal<PostFormData>();
 
 	useEffect(() => {
 		loadPosts();
@@ -39,66 +28,58 @@ const PostManagement = () => {
 
 	useEffect(() => {
 		if (error) {
-			setErrorMessage(error);
-			setShowErrorAlert(true);
+			alert.displayError(error);
 		}
-	}, [error]);
+	}, [error, alert]);
 
 	const handleCreate = async () => {
 		try {
 			const postData: PostFormData = {
-				title: formData.title!,
-				content: formData.content || '',
-				author: formData.author!,
-				category: formData.category!,
-				status: formData.status || 'draft',
+				title: createModal.formData.title!,
+				content: createModal.formData.content || '',
+				author: createModal.formData.author!,
+				category: createModal.formData.category!,
+				status: createModal.formData.status || 'draft',
 			};
 			await createPost(postData);
 
-			setIsCreateModalOpen(false);
-			setFormData({});
-			setAlertMessage('게시글이 생성되었습니다');
-			setShowSuccessAlert(true);
+			createModal.close();
+			alert.displaySuccess('게시글이 생성되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				setErrorMessage(error.message);
+				alert.displayError(error.message);
 			} else {
-				setErrorMessage('생성에 실패했습니다');
+				alert.displayError('생성에 실패했습니다');
 			}
-			setShowErrorAlert(true);
 		}
 	};
 
 	const handleEdit = (post: Post) => {
 		setSelectedPost(post);
-		setFormData({
+		editModal.open({
 			title: post.title,
 			content: post.content,
 			author: post.author,
 			category: post.category,
 			status: post.status,
 		});
-		setIsEditModalOpen(true);
 	};
 
 	const handleUpdate = async () => {
 		if (!selectedPost) return;
 
 		try {
-			await updatePost(selectedPost.id, formData);
+			await updatePost(selectedPost.id, editModal.formData);
 
-			setIsEditModalOpen(false);
-			setFormData({});
+			editModal.close();
 			setSelectedPost(null);
-			setAlertMessage('게시글이 수정되었습니다');
-			setShowSuccessAlert(true);
+			alert.displaySuccess('게시글이 수정되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				setErrorMessage(error.message);
+				alert.displayError(error.message);
 			} else {
-				setErrorMessage('수정에 실패했습니다');
+				alert.displayError('수정에 실패했습니다');
 			}
-			setShowErrorAlert(true);
 		}
 	};
 
@@ -107,15 +88,13 @@ const PostManagement = () => {
 
 		try {
 			await deletePost(id);
-			setAlertMessage('삭제되었습니다');
-			setShowSuccessAlert(true);
+			alert.displaySuccess('삭제되었습니다');
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				setErrorMessage(error.message);
+				alert.displayError(error.message);
 			} else {
-				setErrorMessage('삭제에 실패했습니다');
+				alert.displayError('삭제에 실패했습니다');
 			}
-			setShowErrorAlert(true);
 		}
 	};
 
@@ -130,15 +109,13 @@ const PostManagement = () => {
 			}
 
 			const message = action === 'publish' ? '게시' : action === 'archive' ? '보관' : '복원';
-			setAlertMessage(`${message}되었습니다`);
-			setShowSuccessAlert(true);
+			alert.displaySuccess(`${message}되었습니다`);
 		} catch (error: unknown) {
 			if (error instanceof Error) {
-				setErrorMessage(error.message);
+				alert.displayError(error.message);
 			} else {
-				setErrorMessage('작업에 실패했습니다');
+				alert.displayError('작업에 실패했습니다');
 			}
-			setShowErrorAlert(true);
 		}
 	};
 
@@ -164,29 +141,17 @@ const PostManagement = () => {
 						수정
 					</Button>
 					{row.status === 'draft' && (
-						<Button
-							size="sm"
-							variant="success"
-							onClick={() => handleStatusAction(row.id, 'publish')}
-						>
+						<Button size="sm" variant="success" onClick={() => handleStatusAction(row.id, 'publish')}>
 							게시
 						</Button>
 					)}
 					{row.status === 'published' && (
-						<Button
-							size="sm"
-							variant="secondary"
-							onClick={() => handleStatusAction(row.id, 'archive')}
-						>
+						<Button size="sm" variant="secondary" onClick={() => handleStatusAction(row.id, 'archive')}>
 							보관
 						</Button>
 					)}
 					{row.status === 'archived' && (
-						<Button
-							size="sm"
-							variant="primary"
-							onClick={() => handleStatusAction(row.id, 'restore')}
-						>
+						<Button size="sm" variant="primary" onClick={() => handleStatusAction(row.id, 'restore')}>
 							복원
 						</Button>
 					)}
@@ -215,54 +180,57 @@ const PostManagement = () => {
 		label: string;
 		value: number;
 		color: VariantProps<typeof statsCardVariants>['color'];
-	}[] = [
-		{
-			label: '전체',
-			value: posts.length,
-			color: 'blue',
-		},
-		{
-			label: '게시됨',
-			value: posts.filter((p) => p.status === 'published').length,
-			color: 'green',
-		},
-		{
-			label: '임시저장',
-			value: posts.filter((p) => p.status === 'draft').length,
-			color: 'orange',
-		},
-		{
-			label: '보관됨',
-			value: posts.filter((p) => p.status === 'archived').length,
-			color: 'red',
-		},
-		{
-			label: '총 조회수',
-			value: posts.reduce((sum, p) => sum + p.views, 0),
-			color: 'gray',
-		},
-	];
+	}[] = useMemo(
+		() => [
+			{
+				label: '전체',
+				value: posts.length,
+				color: 'blue',
+			},
+			{
+				label: '게시됨',
+				value: posts.filter((p) => p.status === 'published').length,
+				color: 'green',
+			},
+			{
+				label: '임시저장',
+				value: posts.filter((p) => p.status === 'draft').length,
+				color: 'orange',
+			},
+			{
+				label: '보관됨',
+				value: posts.filter((p) => p.status === 'archived').length,
+				color: 'red',
+			},
+			{
+				label: '총 조회수',
+				value: posts.reduce((sum, p) => sum + p.views, 0),
+				color: 'gray',
+			},
+		],
+		[posts],
+	);
 
 	return (
 		<>
 			<div className="mb-4 text-right">
-				<Button variant="primary" size="md" onClick={() => setIsCreateModalOpen(true)}>
+				<Button variant="primary" size="md" onClick={() => createModal.open()}>
 					새로 만들기
 				</Button>
 			</div>
 
-			{showSuccessAlert && (
+			{alert.showSuccess && (
 				<div className="mb-2.5">
-					<Alert variant="success" title="성공" onClose={() => setShowSuccessAlert(false)}>
-						{alertMessage}
+					<Alert variant="success" title="성공" onClose={alert.hideSuccess}>
+						{alert.successMessage}
 					</Alert>
 				</div>
 			)}
 
-			{showErrorAlert && (
+			{alert.showError && (
 				<div className="mb-2.5">
-					<Alert variant="error" title="오류" onClose={() => setShowErrorAlert(false)}>
-						{errorMessage}
+					<Alert variant="error" title="오류" onClose={alert.hideError}>
+						{alert.errorMessage}
 					</Alert>
 				</div>
 			)}
@@ -274,36 +242,19 @@ const PostManagement = () => {
 			</div>
 
 			<div className="border border-gray-300 bg-white overflow-auto">
-				<Table
-					columns={columns}
-					data={posts}
-					striped
-					hover
-					renderCell={renderCell}
-					getRowKey={(row) => row.id}
-				/>
+				<Table columns={columns} data={posts} striped hover renderCell={renderCell} getRowKey={(row) => row.id} />
 			</div>
 
 			{/* Create Modal */}
 			<Modal
-				isOpen={isCreateModalOpen}
-				onClose={() => {
-					setIsCreateModalOpen(false);
-					setFormData({});
-				}}
+				isOpen={createModal.isOpen}
+				onClose={createModal.close}
 				title="새 게시글 만들기"
 				size="large"
 				showFooter
 				footerContent={
 					<>
-						<Button
-							variant="secondary"
-							size="md"
-							onClick={() => {
-								setIsCreateModalOpen(false);
-								setFormData({});
-							}}
-						>
+						<Button variant="secondary" size="md" onClick={createModal.close}>
 							취소
 						</Button>
 						<Button variant="primary" size="md" onClick={handleCreate}>
@@ -312,60 +263,14 @@ const PostManagement = () => {
 					</>
 				}
 			>
-				<div className="space-y-4">
-					<FormInput
-						name="title"
-						value={formData.title || ''}
-						onChange={(value) => setFormData({ ...formData, title: value })}
-						label="제목"
-						placeholder="게시글 제목을 입력하세요"
-						required
-						width="full"
-						fieldType="postTitle"
-					/>
-					<div className="grid grid-cols-2 gap-4">
-						<FormInput
-							name="author"
-							value={formData.author || ''}
-							onChange={(value) => setFormData({ ...formData, author: value })}
-							label="작성자"
-							placeholder="작성자명"
-							required
-							width="full"
-						/>
-						<FormSelect
-							name="category"
-							value={formData.category || ''}
-							onChange={(value) =>
-								setFormData({ ...formData, category: value as Post['category'] })
-							}
-							options={[
-								{ value: 'development', label: 'Development' },
-								{ value: 'design', label: 'Design' },
-								{ value: 'accessibility', label: 'Accessibility' },
-							]}
-							label="카테고리"
-							placeholder="카테고리 선택"
-							size="md"
-						/>
-					</div>
-					<FormTextarea
-						name="content"
-						value={formData.content || ''}
-						onChange={(value) => setFormData({ ...formData, content: value })}
-						label="내용"
-						placeholder="게시글 내용을 입력하세요"
-						rows={6}
-					/>
-				</div>
+				<PostFormFields formData={createModal.formData} onChange={createModal.updateFormData} />
 			</Modal>
 
 			{/* Edit Modal */}
 			<Modal
-				isOpen={isEditModalOpen}
+				isOpen={editModal.isOpen}
 				onClose={() => {
-					setIsEditModalOpen(false);
-					setFormData({});
+					editModal.close();
 					setSelectedPost(null);
 				}}
 				title="게시글 수정"
@@ -377,8 +282,7 @@ const PostManagement = () => {
 							variant="secondary"
 							size="md"
 							onClick={() => {
-								setIsEditModalOpen(false);
-								setFormData({});
+								editModal.close();
 								setSelectedPost(null);
 							}}
 						>
@@ -393,55 +297,11 @@ const PostManagement = () => {
 				<div className="space-y-4">
 					{selectedPost && (
 						<Alert variant="info">
-							ID: {selectedPost.id} | 생성일: {selectedPost.createdAt} | 조회수:{' '}
-							{selectedPost.views}
+							ID: {selectedPost.id} | 생성일: {selectedPost.createdAt} | 조회수: {selectedPost.views}
 						</Alert>
 					)}
 
-					<FormInput
-						name="title"
-						value={formData.title || ''}
-						onChange={(value) => setFormData({ ...formData, title: value })}
-						label="제목"
-						placeholder="게시글 제목을 입력하세요"
-						required
-						width="full"
-						fieldType="postTitle"
-					/>
-					<div className="grid grid-cols-2 gap-4">
-						<FormInput
-							name="author"
-							value={formData.author || ''}
-							onChange={(value) => setFormData({ ...formData, author: value })}
-							label="작성자"
-							placeholder="작성자명"
-							required
-							width="full"
-						/>
-						<FormSelect
-							name="category"
-							value={formData.category || ''}
-							onChange={(value) =>
-								setFormData({ ...formData, category: value as Post['category'] })
-							}
-							options={[
-								{ value: 'development', label: 'Development' },
-								{ value: 'design', label: 'Design' },
-								{ value: 'accessibility', label: 'Accessibility' },
-							]}
-							label="카테고리"
-							placeholder="카테고리 선택"
-							size="md"
-						/>
-					</div>
-					<FormTextarea
-						name="content"
-						value={formData.content || ''}
-						onChange={(value) => setFormData({ ...formData, content: value })}
-						label="내용"
-						placeholder="게시글 내용을 입력하세요"
-						rows={6}
-					/>
+					<PostFormFields formData={editModal.formData} onChange={editModal.updateFormData} />
 				</div>
 			</Modal>
 		</>
