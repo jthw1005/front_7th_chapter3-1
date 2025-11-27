@@ -134,9 +134,7 @@ jobs:
           EOF
           )" \
             --base main \
-            --head ${{ steps.create_branch.outputs.branch_name }} \
-            --label "design-tokens" \
-            --label "automated-pr"
+            --head ${{ steps.create_branch.outputs.branch_name }}
 
       - name: Summary
         run: |
