@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 
 import Button from '@/components/ui/button';
 import { Alert } from '@/components/Alert';
-import { Table } from '@/components/Table';
+import { Table } from '@/components/ui/table';
 import { Modal } from '@/components/Modal';
 import type { User, UserFormData, TableColumn, PostStatus } from '@/types';
 import DashboardCard, { statsCardVariants } from '@/components/DashboardCard';

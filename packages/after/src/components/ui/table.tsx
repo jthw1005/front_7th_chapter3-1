@@ -1,6 +1,95 @@
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
+import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 import type { TableColumn } from '@/types/components';
 
+// Base shadcn components
+function TableRoot({ className, ...props }: React.ComponentProps<'table'>) {
+	return (
+		<div data-slot="table-container" className="relative w-full overflow-x-auto">
+			<table
+				data-slot="table"
+				className={cn('w-full caption-bottom text-sm', className)}
+				{...props}
+			/>
+		</div>
+	);
+}
+
+function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
+	return <thead data-slot="table-header" className={cn('[&_tr]:border-b', className)} {...props} />;
+}
+
+function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
+	return (
+		<tbody
+			data-slot="table-body"
+			className={cn('[&_tr:last-child]:border-0', className)}
+			{...props}
+		/>
+	);
+}
+
+function TableFooter({ className, ...props }: React.ComponentProps<'tfoot'>) {
+	return (
+		<tfoot
+			data-slot="table-footer"
+			className={cn('bg-muted/50 border-t font-medium [&>tr]:last:border-b-0', className)}
+			{...props}
+		/>
+	);
+}
+
+function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
+	return (
+		<tr
+			data-slot="table-row"
+			className={cn(
+				'hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors',
+				className,
+			)}
+			{...props}
+		/>
+	);
+}
+
+function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
+	return (
+		<th
+			data-slot="table-head"
+			className={cn(
+				'text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+				className,
+			)}
+			{...props}
+		/>
+	);
+}
+
+function TableCell({ className, ...props }: React.ComponentProps<'td'>) {
+	return (
+		<td
+			data-slot="table-cell"
+			className={cn(
+				'p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+				className,
+			)}
+			{...props}
+		/>
+	);
+}
+
+function TableCaption({ className, ...props }: React.ComponentProps<'caption'>) {
+	return (
+		<caption
+			data-slot="table-caption"
+			className={cn('text-muted-foreground mt-4 text-sm', className)}
+			{...props}
+		/>
+	);
+}
+
+// Enhanced Table component with features
 interface TableProps<T> {
 	columns: TableColumn<T>[];
 	data: T[];
@@ -13,9 +102,11 @@ interface TableProps<T> {
 	onRowClick?: (row: T) => void;
 	renderCell?: (row: T, column: TableColumn<T>) => React.ReactNode;
 	getRowKey?: (row: T, index: number) => string | number;
+	className?: string;
 }
 
-export function Table<T extends Record<string, any>>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function Table<T extends Record<string, any>>({
 	columns,
 	data = [],
 	striped = false,
@@ -27,6 +118,7 @@ export function Table<T extends Record<string, any>>({
 	onRowClick,
 	renderCell,
 	getRowKey = (_, index) => index,
+	className,
 }: TableProps<T>) {
 	const [tableData, setTableData] = useState<T[]>(data);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -71,126 +163,91 @@ export function Table<T extends Record<string, any>>({
 			: tableData;
 
 	const paginatedData = filteredData.slice((currentPage - 1) * pageSize, currentPage * pageSize);
-
 	const totalPages = Math.ceil(filteredData.length / pageSize);
 
-	const tableClasses = [
+	const tableClasses = cn(
 		'table',
 		striped && 'table-striped',
 		bordered && 'table-bordered',
 		hover && 'table-hover',
-	]
-		.filter(Boolean)
-		.join(' ');
+		className,
+	);
 
 	const defaultRenderCell = (row: T, column: TableColumn<T>): React.ReactNode => {
 		const value = row[column.key as keyof T];
-
-		// React Element면 그대로 렌더링
 		if (React.isValidElement(value)) {
 			return value;
 		}
-
-		return value;
+		return String(value ?? '');
 	};
 
 	return (
 		<div className="table-container">
 			{searchable && (
-				<div style={{ marginBottom: '16px' }}>
+				<div className="mb-4">
 					<input
 						type="text"
 						placeholder="검색..."
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
-						style={{
-							padding: '8px 12px',
-							border: '1px solid #ddd',
-							borderRadius: '4px',
-							width: '300px',
-						}}
+						className="px-3 py-2 border border-gray-300 rounded w-[300px]"
 					/>
 				</div>
 			)}
 
 			<table className={tableClasses}>
-				<thead>
-					<tr>
+				<TableHeader>
+					<TableRow>
 						{columns.map((column) => (
-							<th
+							<TableHead
 								key={String(column.key)}
 								style={column.width ? { width: column.width } : undefined}
 								onClick={() => sortable && column.sortable !== false && handleSort(column.key)}
+								className={sortable && column.sortable !== false ? 'cursor-pointer' : ''}
 							>
-								<div
-									style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '4px',
-										cursor: sortable && column.sortable !== false ? 'pointer' : 'default',
-									}}
-								>
+								<div className="flex items-center gap-1">
 									{column.header}
 									{sortable && sortColumn === column.key && (
 										<span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
 									)}
 								</div>
-							</th>
+							</TableHead>
 						))}
-					</tr>
-				</thead>
-				<tbody>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
 					{paginatedData.map((row, rowIndex) => (
-						<tr
+						<TableRow
 							key={getRowKey(row, rowIndex)}
 							onClick={() => onRowClick?.(row)}
-							style={{ cursor: onRowClick ? 'pointer' : 'default' }}
+							className={onRowClick ? 'cursor-pointer' : ''}
 						>
 							{columns.map((column) => (
-								<td key={String(column.key)}>
+								<TableCell key={String(column.key)}>
 									{renderCell ? renderCell(row, column) : defaultRenderCell(row, column)}
-								</td>
+								</TableCell>
 							))}
-						</tr>
+						</TableRow>
 					))}
-				</tbody>
+				</TableBody>
 			</table>
 
 			{totalPages > 1 && (
-				<div
-					style={{
-						marginTop: '16px',
-						display: 'flex',
-						gap: '8px',
-						justifyContent: 'center',
-					}}
-				>
+				<div className="mt-4 flex gap-2 justify-center">
 					<button
 						onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
 						disabled={currentPage === 1}
-						style={{
-							padding: '6px 12px',
-							border: '1px solid #ddd',
-							background: 'white',
-							borderRadius: '4px',
-							cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
-						}}
+						className="px-3 py-1.5 border border-gray-300 bg-white rounded disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						이전
 					</button>
-					<span style={{ padding: '6px 12px' }}>
+					<span className="px-3 py-1.5">
 						{currentPage} / {totalPages}
 					</span>
 					<button
 						onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
 						disabled={currentPage === totalPages}
-						style={{
-							padding: '6px 12px',
-							border: '1px solid #ddd',
-							background: 'white',
-							borderRadius: '4px',
-							cursor: currentPage === totalPages ? 'not-allowed' : 'pointer',
-						}}
+						className="px-3 py-1.5 border border-gray-300 bg-white rounded disabled:cursor-not-allowed disabled:opacity-50"
 					>
 						다음
 					</button>
@@ -199,3 +256,16 @@ export function Table<T extends Record<string, any>>({
 		</div>
 	);
 }
+
+export {
+	Table,
+	TableRoot,
+	TableHeader,
+	TableBody,
+	TableFooter,
+	TableHead,
+	TableRow,
+	TableCell,
+	TableCaption,
+};
+export type { TableProps };

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 
 import Button from '@/components/ui/button';
 import { Alert } from '@/components/Alert';
-import { Table } from '@/components/Table';
+import { Table } from '@/components/ui/table';
 import { Modal } from '@/components/Modal';
 import type { Post, PostFormData, TableColumn } from '@/types';
 import StatusBadge from '@/components/Badge/StatusBadge';
