@@ -26,7 +26,7 @@ interface PaginationTableProps<T> {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function PaginationTable<T extends Record<string, any>>({
+const PaginationTable = <T extends Record<string, any>>({
 	columns,
 	data = [],
 	striped = false,
@@ -39,7 +39,7 @@ function PaginationTable<T extends Record<string, any>>({
 	renderCell,
 	getRowKey = (_, index) => index,
 	className,
-}: PaginationTableProps<T>) {
+}: PaginationTableProps<T>) => {
 	const [tableData, setTableData] = useState<T[]>(data);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -175,6 +175,6 @@ function PaginationTable<T extends Record<string, any>>({
 			)}
 		</div>
 	);
-}
+};
 
 export { PaginationTable };

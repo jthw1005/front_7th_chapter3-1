@@ -4,7 +4,6 @@ export const Header = () => {
 	return (
 		<header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm sticky top-0 z-1000">
 			<div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center h-16">
-				{/* Logo */}
 				<div className="flex items-center gap-3">
 					<div className="w-10 h-10 bg-primary-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">
 						L
@@ -19,7 +18,6 @@ export const Header = () => {
 					</div>
 				</div>
 
-				{/* User Info and Theme Toggle */}
 				<div className="flex items-center gap-3">
 					<ModeToggle />
 					<div className="text-right">
