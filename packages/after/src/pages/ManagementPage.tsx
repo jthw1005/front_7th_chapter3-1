@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import Button from '../components/ui/button';
 import { Alert, Table, Modal } from '../components/organisms';
-import { FormInput, FormSelect, FormTextarea } from '../components/molecules';
+import { FormInput, FormTextarea } from '../components/molecules';
 import type { User, Post, PostStatus, TableColumn, UserFormData, PostFormData } from '@/types';
 import '../styles/components.css';
-import StatsCard from '@/components/StatsCard';
+import StatsCard from '@/components/DashboardCard';
 import UserRoleBadge from '@/components/Badge/UserRoleBadge';
 import StatusBadge from '@/components/Badge/StatusBadge';
 import CategoryBadge from '@/components/Badge/CategoryBadge';
 import { useUserManagement } from '@/hooks/useUserManagement';
 import { usePostManagement } from '@/hooks/usePostManagement';
+import { FormSelect } from '@/components/ui/native-select';
 
 type EntityType = 'user' | 'post';
 type Entity = User | Post;
@@ -83,8 +84,12 @@ const ManagementPage: React.FC = () => {
 			setFormData({});
 			setAlertMessage(`${entityType === 'user' ? '사용자' : '게시글'}가 생성되었습니다`);
 			setShowSuccessAlert(true);
-		} catch (error: any) {
-			setErrorMessage(error.message || '생성에 실패했습니다');
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				setErrorMessage(error.message);
+			} else {
+				setErrorMessage('생성에 실패했습니다');
+			}
 			setShowErrorAlert(true);
 		}
 	};
@@ -129,8 +134,12 @@ const ManagementPage: React.FC = () => {
 			setSelectedItem(null);
 			setAlertMessage(`${entityType === 'user' ? '사용자' : '게시글'}가 수정되었습니다`);
 			setShowSuccessAlert(true);
-		} catch (error: any) {
-			setErrorMessage(error.message || '수정에 실패했습니다');
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				setErrorMessage(error.message);
+			} else {
+				setErrorMessage('수정에 실패했습니다');
+			}
 			setShowErrorAlert(true);
 		}
 	};
@@ -147,8 +156,12 @@ const ManagementPage: React.FC = () => {
 
 			setAlertMessage('삭제되었습니다');
 			setShowSuccessAlert(true);
-		} catch (error: any) {
-			setErrorMessage(error.message || '삭제에 실패했습니다');
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				setErrorMessage(error.message);
+			} else {
+				setErrorMessage('삭제에 실패했습니다');
+			}
 			setShowErrorAlert(true);
 		}
 	};
@@ -168,8 +181,12 @@ const ManagementPage: React.FC = () => {
 			const message = action === 'publish' ? '게시' : action === 'archive' ? '보관' : '복원';
 			setAlertMessage(`${message}되었습니다`);
 			setShowSuccessAlert(true);
-		} catch (error: any) {
-			setErrorMessage(error.message || '작업에 실패했습니다');
+		} catch (error: unknown) {
+			if (error instanceof Error) {
+				setErrorMessage(error.message);
+			} else {
+				setErrorMessage('작업에 실패했습니다');
+			}
 			setShowErrorAlert(true);
 		}
 	};
@@ -308,7 +325,11 @@ const ManagementPage: React.FC = () => {
 						수정
 					</Button>
 					{row.status === 'draft' && (
-						<Button size="sm" variant="success" onClick={() => handleStatusAction(row.id, 'publish')}>
+						<Button
+							size="sm"
+							variant="success"
+							onClick={() => handleStatusAction(row.id, 'publish')}
+						>
 							게시
 						</Button>
 					)}
@@ -322,7 +343,11 @@ const ManagementPage: React.FC = () => {
 						</Button>
 					)}
 					{row.status === 'archived' && (
-						<Button size="sm" variant="primary" onClick={() => handleStatusAction(row.id, 'restore')}>
+						<Button
+							size="sm"
+							variant="primary"
+							onClick={() => handleStatusAction(row.id, 'restore')}
+						>
 							복원
 						</Button>
 					)}

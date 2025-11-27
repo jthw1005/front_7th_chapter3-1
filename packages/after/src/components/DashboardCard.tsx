@@ -16,13 +16,13 @@ const statsCardVariants = cva('p-3 border rounded-sm', {
 	},
 });
 
-interface StatsCardProps extends VariantProps<typeof statsCardVariants> {
+interface DashboardCardProps extends VariantProps<typeof statsCardVariants> {
 	label: string;
 	value: number;
 	className?: string;
 }
 
-const StatsCard = ({ label, value, color, className }: StatsCardProps) => {
+const DashboardCard = ({ label, value, color, className }: DashboardCardProps) => {
 	return (
 		<div className={cn(statsCardVariants({ color }), className)}>
 			<div className="text-xs text-gray-600 mb-1">{label}</div>
@@ -31,4 +31,4 @@ const StatsCard = ({ label, value, color, className }: StatsCardProps) => {
 	);
 };
 
-export default StatsCard;
+export default DashboardCard;
