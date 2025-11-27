@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import React from 'react';
 import { NativeSelect, NativeSelectOption, NativeSelectOptGroup } from './native-select';
 
 const meta = {
 	title: 'UI/NativeSelect',
-	component: FormSelect,
+	component: NativeSelect,
 	parameters: {
 		layout: 'padded',
 	},
@@ -18,113 +19,83 @@ const meta = {
 			control: 'boolean',
 			description: 'Disabled state',
 		},
-		required: {
-			control: 'boolean',
-			description: 'Required field',
-		},
 	},
-} satisfies Meta<typeof FormSelect>;
+} satisfies Meta<typeof NativeSelect>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const sampleOptions = [
-	{ value: 'option1', label: 'Option 1' },
-	{ value: 'option2', label: 'Option 2' },
-	{ value: 'option3', label: 'Option 3' },
-];
-
 export const Default: Story = {
-	args: {
-		name: 'default-select',
-		options: sampleOptions,
-		placeholder: 'Select an option...',
-	},
-};
-
-export const WithLabel: Story = {
-	args: {
-		name: 'labeled-select',
-		label: 'Choose Option',
-		options: sampleOptions,
-		placeholder: 'Select an option...',
-	},
-};
-
-export const Required: Story = {
-	args: {
-		name: 'required-select',
-		label: 'Required Select',
-		options: sampleOptions,
-		placeholder: 'Please select...',
-		required: true,
-	},
-};
-
-export const WithError: Story = {
-	args: {
-		name: 'error-select',
-		label: 'Select with Error',
-		options: sampleOptions,
-		placeholder: 'Select an option...',
-		error: 'This field is required',
-	},
-};
-
-export const WithHelpText: Story = {
-	args: {
-		name: 'help-select',
-		label: 'Select with Help',
-		options: sampleOptions,
-		placeholder: 'Select an option...',
-		helpText: 'Choose the option that best fits your needs',
-	},
-};
-
-export const Disabled: Story = {
-	args: {
-		name: 'disabled-select',
-		label: 'Disabled Select',
-		options: sampleOptions,
-		placeholder: 'Cannot select',
-		disabled: true,
-	},
+	args: {},
+	render: () => (
+		<NativeSelect defaultValue="">
+			<NativeSelectOption value="" disabled>
+				Select an option...
+			</NativeSelectOption>
+			<NativeSelectOption value="option1">Option 1</NativeSelectOption>
+			<NativeSelectOption value="option2">Option 2</NativeSelectOption>
+			<NativeSelectOption value="option3">Option 3</NativeSelectOption>
+		</NativeSelect>
+	),
 };
 
 export const SmallSize: Story = {
-	args: {
-		name: 'small-select',
-		label: 'Small Select',
-		options: sampleOptions,
-		size: 'sm',
-	},
+	args: {},
+	render: () => (
+		<NativeSelect size="sm" defaultValue="">
+			<NativeSelectOption value="" disabled>
+				Small select...
+			</NativeSelectOption>
+			<NativeSelectOption value="option1">Option 1</NativeSelectOption>
+			<NativeSelectOption value="option2">Option 2</NativeSelectOption>
+			<NativeSelectOption value="option3">Option 3</NativeSelectOption>
+		</NativeSelect>
+	),
 };
 
 export const MediumSize: Story = {
-	args: {
-		name: 'medium-select',
-		label: 'Medium Select',
-		options: sampleOptions,
-		size: 'md',
-	},
+	args: {},
+	render: () => (
+		<NativeSelect size="md" defaultValue="">
+			<NativeSelectOption value="" disabled>
+				Medium select...
+			</NativeSelectOption>
+			<NativeSelectOption value="option1">Option 1</NativeSelectOption>
+			<NativeSelectOption value="option2">Option 2</NativeSelectOption>
+			<NativeSelectOption value="option3">Option 3</NativeSelectOption>
+		</NativeSelect>
+	),
 };
 
 export const LargeSize: Story = {
-	args: {
-		name: 'large-select',
-		label: 'Large Select',
-		options: sampleOptions,
-		size: 'lg',
-	},
+	args: {},
+	render: () => (
+		<NativeSelect size="lg" defaultValue="">
+			<NativeSelectOption value="" disabled>
+				Large select...
+			</NativeSelectOption>
+			<NativeSelectOption value="option1">Option 1</NativeSelectOption>
+			<NativeSelectOption value="option2">Option 2</NativeSelectOption>
+			<NativeSelectOption value="option3">Option 3</NativeSelectOption>
+		</NativeSelect>
+	),
 };
 
-export const CustomNativeSelect: Story = {
+export const Disabled: Story = {
+	args: {},
+	render: () => (
+		<NativeSelect disabled defaultValue="option1">
+			<NativeSelectOption value="option1">Cannot change</NativeSelectOption>
+			<NativeSelectOption value="option2">Option 2</NativeSelectOption>
+		</NativeSelect>
+	),
+};
+
+export const WithOptGroups: Story = {
+	args: {},
 	render: () => (
 		<div className="w-[300px]">
-			<label htmlFor="custom-select" className="block mb-2 text-sm font-medium">
-				Custom Native Select
-			</label>
-			<NativeSelect id="custom-select" defaultValue="">
+			<NativeSelect defaultValue="">
 				<NativeSelectOption value="" disabled>
 					Select a country
 				</NativeSelectOption>
@@ -144,6 +115,35 @@ export const CustomNativeSelect: Story = {
 					<NativeSelectOption value="cn">China</NativeSelectOption>
 				</NativeSelectOptGroup>
 			</NativeSelect>
+		</div>
+	),
+};
+
+export const AllSizes: Story = {
+	args: {},
+	render: () => (
+		<div className="space-y-4 w-[300px]">
+			<div>
+				<label className="block mb-2 text-sm font-medium">Small</label>
+				<NativeSelect size="sm" defaultValue="option1">
+					<NativeSelectOption value="option1">Small Option 1</NativeSelectOption>
+					<NativeSelectOption value="option2">Small Option 2</NativeSelectOption>
+				</NativeSelect>
+			</div>
+			<div>
+				<label className="block mb-2 text-sm font-medium">Medium (Default)</label>
+				<NativeSelect size="md" defaultValue="option1">
+					<NativeSelectOption value="option1">Medium Option 1</NativeSelectOption>
+					<NativeSelectOption value="option2">Medium Option 2</NativeSelectOption>
+				</NativeSelect>
+			</div>
+			<div>
+				<label className="block mb-2 text-sm font-medium">Large</label>
+				<NativeSelect size="lg" defaultValue="option1">
+					<NativeSelectOption value="option1">Large Option 1</NativeSelectOption>
+					<NativeSelectOption value="option2">Large Option 2</NativeSelectOption>
+				</NativeSelect>
+			</div>
 		</div>
 	),
 };
