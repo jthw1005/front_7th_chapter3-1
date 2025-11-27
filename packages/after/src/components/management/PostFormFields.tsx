@@ -1,4 +1,5 @@
-import { FormInput, FormTextarea } from '@/components/molecules';
+import { FormInput } from '@/components/molecules';
+import { FormTextarea } from '@/components/FormTextarea';
 import { FormSelect, type Option } from '@/components/ui/native-select';
 import type { Post, PostFormData } from '@/types';
 
@@ -24,7 +25,6 @@ export const PostFormFields = ({ formData, onChange }: PostFormFieldsProps) => {
 				placeholder="게시글 제목을 입력하세요"
 				required
 				width="full"
-				fieldType="postTitle"
 			/>
 			<div className="grid grid-cols-2 gap-4">
 				<FormInput
@@ -49,7 +49,7 @@ export const PostFormFields = ({ formData, onChange }: PostFormFieldsProps) => {
 			<FormTextarea
 				name="content"
 				value={formData.content || ''}
-				onChange={(value) => onChange({ ...formData, content: value })}
+				onChange={(value: string) => onChange({ ...formData, content: value })}
 				label="내용"
 				placeholder="게시글 내용을 입력하세요"
 				rows={6}

@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import { useFormValidation } from '@/hooks/useFormValidation';
+import React from 'react';
 
-// Improved: UI component still accepts fieldType for validation, but delegates to hook
 interface FormInputProps {
 	name: string;
 	value: string;
 	onChange: (value: string) => void;
+	onBlur?: (value: string) => void;
 	label?: string;
 	type?: 'text' | 'email' | 'password' | 'number' | 'url';
 	placeholder?: string;
@@ -14,17 +13,14 @@ interface FormInputProps {
 	error?: string;
 	helpText?: string;
 	width?: 'small' | 'medium' | 'large' | 'full';
-
-	// Field type for validation
-	fieldType?: 'username' | 'email' | 'postTitle' | 'slug' | 'normal';
-	entityType?: 'user' | 'post';
-	checkBusinessRules?: boolean;
+	className?: string;
 }
 
 export const FormInput = ({
 	name,
 	value,
 	onChange,
+	onBlur,
 	label,
 	type = 'text',
 	placeholder,
@@ -33,55 +29,29 @@ export const FormInput = ({
 	error,
 	helpText,
 	width = 'full',
-	fieldType = 'normal',
-	entityType,
-	checkBusinessRules = false,
+	className,
 }: FormInputProps) => {
-	const [internalError, setInternalError] = useState('');
-
-	// Use validation hook for business logic
-	const { validateUsername, validateEmail, validatePostTitle } = useFormValidation();
-
-	// Improved: Delegate validation to hook
-	const validateField = (val: string) => {
-		setInternalError('');
-
-		if (!val) return;
-
-		let validationError: string | undefined;
-
-		if (fieldType === 'username') {
-			validationError = validateUsername(val, checkBusinessRules);
-		} else if (fieldType === 'email') {
-			const requireCompanyDomain = checkBusinessRules && entityType === 'user';
-			validationError = validateEmail(val, checkBusinessRules, requireCompanyDomain);
-		} else if (fieldType === 'postTitle') {
-			validationError = validatePostTitle(val, checkBusinessRules);
-		}
-
-		if (validationError) {
-			setInternalError(validationError);
-		}
-	};
-
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		const newValue = e.target.value;
-		onChange(newValue);
-		validateField(newValue);
+		onChange(e.target.value);
 	};
 
-	const displayError = error || internalError;
-	const inputClasses = ['form-input', displayError && 'error', `input-width-${width}`]
+	const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+		if (onBlur) {
+			onBlur(e.target.value);
+		}
+	};
+
+	const inputClasses = ['form-input', error && 'error', `input-width-${width}`, className]
 		.filter(Boolean)
 		.join(' ');
-	const helperClasses = ['form-helper-text', displayError && 'error'].filter(Boolean).join(' ');
+	const helperClasses = ['form-helper-text', error && 'error'].filter(Boolean).join(' ');
 
 	return (
 		<div className="form-group">
 			{label && (
 				<label htmlFor={name} className="form-label">
 					{label}
-					{required && <span style={{ color: '#d32f2f' }}>*</span>}
+					{required && <span className="text-destructive ml-1">*</span>}
 				</label>
 			)}
 
@@ -91,14 +61,25 @@ export const FormInput = ({
 				type={type}
 				value={value}
 				onChange={handleChange}
+				onBlur={handleBlur}
 				placeholder={placeholder}
 				required={required}
 				disabled={disabled}
 				className={inputClasses}
+				aria-invalid={!!error}
+				aria-describedby={error ? `${name}-error` : helpText ? `${name}-description` : undefined}
 			/>
 
-			{displayError && <span className={helperClasses}>{displayError}</span>}
-			{helpText && !displayError && <span className="form-helper-text">{helpText}</span>}
+			{error && (
+				<span id={`${name}-error`} className={helperClasses}>
+					{error}
+				</span>
+			)}
+			{helpText && !error && (
+				<span id={`${name}-description`} className="form-helper-text">
+					{helpText}
+				</span>
+			)}
 		</div>
 	);
 };

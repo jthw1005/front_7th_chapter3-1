@@ -30,7 +30,6 @@ export const UserFormFields = ({ formData, onChange }: UserFormFieldsProps) => {
 				placeholder="사용자명을 입력하세요"
 				required
 				width="full"
-				fieldType="username"
 			/>
 			<FormInput
 				name="email"
@@ -41,7 +40,6 @@ export const UserFormFields = ({ formData, onChange }: UserFormFieldsProps) => {
 				type="email"
 				required
 				width="full"
-				fieldType="email"
 			/>
 			<div className="grid grid-cols-2 gap-4">
 				<FormSelect
