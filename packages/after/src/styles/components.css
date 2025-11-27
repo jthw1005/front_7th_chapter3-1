@@ -27,6 +27,10 @@
 	font-family: Arial, sans-serif;
 }
 
+.dark .form-label {
+	color: var(--color-gray-200);
+}
+
 .form-input,
 .form-select {
 	width: 100%;
@@ -38,6 +42,13 @@
 	border-radius: 3px;
 	background-color: white;
 	box-sizing: border-box;
+}
+
+.dark .form-input,
+.dark .form-select {
+	color: white;
+	border-color: var(--color-gray-600);
+	background-color: var(--color-gray-700);
 }
 
 .form-input:focus,
@@ -62,6 +73,10 @@
 	font-size: var(--font-size-sm);
 	font-family: Arial, sans-serif;
 	margin-top: var(--spacing-1);
+}
+
+.dark .form-helper-text {
+	color: var(--color-gray-400);
 }
 
 .form-helper-text.error {
@@ -310,8 +325,16 @@
 	background-color: #fff;
 }
 
+.dark .table {
+	background-color: #1f2937;
+}
+
 .table thead {
 	background-color: #fafafa;
+}
+
+.dark .table thead {
+	background-color: #374151;
 }
 
 .table th {
@@ -325,10 +348,20 @@
 	border-bottom: 2px solid rgba(0, 0, 0, 0.12);
 }
 
+.dark .table th {
+	color: rgba(255, 255, 255, 0.7);
+	border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
 .table td {
 	padding: 16px;
 	color: rgba(0, 0, 0, 0.87);
 	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark .table td {
+	color: rgba(255, 255, 255, 0.87);
+	border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .table tbody tr:last-child td {
@@ -380,6 +413,10 @@
 	font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
 
+.dark .modal-content {
+	background-color: #1f2937;
+}
+
 .modal-small {
 	width: 100%;
 	max-width: 400px;
@@ -408,6 +445,10 @@
 	font-size: 1.25rem;
 	font-weight: 500;
 	color: rgba(0, 0, 0, 0.87);
+}
+
+.dark .modal-title {
+	color: rgba(255, 255, 255, 0.87);
 }
 
 .modal-close {
