@@ -7,6 +7,7 @@ import { defineConfig as defineTestConfig, mergeConfig } from 'vitest/config';
 // https://vite.dev/config/
 export default mergeConfig(
 	defineConfig({
+		base: '/front_7th_chapter3-1/',
 		plugins: [react(), tailwindcss()],
 		resolve: {
 			alias: {
