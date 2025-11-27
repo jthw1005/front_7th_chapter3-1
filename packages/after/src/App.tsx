@@ -1,9 +1,8 @@
-import React from 'react';
 import { Header } from './components/organisms';
 import ManagementPage from './pages/ManagementPage';
 import './styles/components.css';
 
-export const App: React.FC = () => {
+export const App = () => {
 	return (
 		<div style={{ minHeight: '100vh', backgroundColor: '#f7fafc' }}>
 			<Header />

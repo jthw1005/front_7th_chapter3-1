@@ -9,7 +9,7 @@ import UserRoleBadge from '@/components/Badge/UserRoleBadge';
 import StatusBadge from '@/components/Badge/StatusBadge';
 import { useUserManagement } from '@/hooks/useUserManagement';
 
-const UserManagement: React.FC = () => {
+const UserManagement = () => {
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);

@@ -4,11 +4,11 @@ import { cn } from '@/lib/utils';
 const statsCardVariants = cva('p-3 border rounded-sm', {
 	variants: {
 		color: {
-			blue: 'bg-primary-100 border-primary-500 text-primary-500',
-			green: 'bg-success-100 border-success-500 text-success-500',
-			orange: 'bg-warning-100 border-warning-500 text-warning-500',
-			red: 'bg-danger-100 border-danger-500 text-danger-500',
-			gray: 'bg-secondary-100 border-gray-500 text-gray-700',
+			blue: 'bg-primary-50 border-primary-300 text-primary-500',
+			green: 'bg-success-50 border-success-300 text-success-500',
+			orange: 'bg-warning-50 border-warning-300 text-warning-500',
+			red: 'bg-danger-50 border-danger-300 text-danger-500',
+			gray: 'bg-gray-100 border-gray-300 text-gray-700',
 		},
 	},
 	defaultVariants: {

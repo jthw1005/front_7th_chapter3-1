@@ -9,7 +9,7 @@ import CategoryBadge from '@/components/Badge/CategoryBadge';
 import { usePostManagement } from '@/hooks/usePostManagement';
 import DashboardCard from '@/components/DashboardCard';
 
-const PostManagement: React.FC = () => {
+const PostManagement = () => {
 	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 	const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 	const [selectedPost, setSelectedPost] = useState<Post | null>(null);

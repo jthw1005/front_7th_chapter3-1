@@ -1,6 +1,4 @@
-import React from 'react';
-
-export const Header: React.FC = () => {
+export const Header = () => {
 	return (
 		<header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-1000">
 			<div className="max-w-[1400px] mx-auto px-6 flex justify-between items-center h-16">
