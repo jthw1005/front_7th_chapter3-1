@@ -1,20 +1,20 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useForm, FormProvider } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 import Button from '@/components/ui/button';
 import { Alert } from '@/components/Alert';
-import { Table } from '@/components/ui/table';
 import { Modal } from '@/components/Modal';
 import type { User, UserFormData, TableColumn, PostStatus } from '@/types';
 import DashboardCard, { statsCardVariants } from '@/components/DashboardCard';
 import UserRoleBadge from '@/components/Badge/UserRoleBadge';
 import StatusBadge from '@/components/Badge/StatusBadge';
 import { useUserManagement } from '@/hooks/useUserManagement';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useAlert } from '@/hooks/useAlert';
 import { UserFormFields } from '@/components/management/UserFormFields';
 import { userFormSchema, type UserFormSchema } from '@/schemas';
 import type { VariantProps } from 'class-variance-authority';
+import { PaginationTable } from '@/components/PaginationTable';
 
 const UserManagement = () => {
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -252,7 +252,7 @@ const UserManagement = () => {
 			</div>
 
 			<div className="border border-gray-300 bg-white overflow-auto">
-				<Table
+				<PaginationTable
 					columns={columns}
 					data={users}
 					striped

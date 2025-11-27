@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import Button from '@/components/ui/button';
 import { Alert } from '@/components/Alert';
-import { Table } from '@/components/ui/table';
 import { Modal } from '@/components/Modal';
 import type { Post, PostFormData, TableColumn } from '@/types';
 import StatusBadge from '@/components/Badge/StatusBadge';
@@ -15,6 +14,7 @@ import DashboardCard, { statsCardVariants } from '@/components/DashboardCard';
 import { PostFormFields } from '@/components/management/PostFormFields';
 import { postFormSchema, type PostFormSchema } from '@/schemas';
 import type { VariantProps } from 'class-variance-authority';
+import { PaginationTable } from '@/components/PaginationTable';
 
 const PostManagement = () => {
 	const [selectedPost, setSelectedPost] = useState<Post | null>(null);
@@ -309,7 +309,7 @@ const PostManagement = () => {
 			</div>
 
 			<div className="border border-gray-300 bg-white overflow-auto">
-				<Table
+				<PaginationTable
 					columns={columns}
 					data={posts}
 					striped

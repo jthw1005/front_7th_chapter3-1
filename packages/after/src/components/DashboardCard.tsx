@@ -1,7 +1,8 @@
 import { cva, type VariantProps } from 'class-variance-authority';
+import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 
-export const statsCardVariants = cva('p-3 border rounded-sm', {
+export const statsCardVariants = cva('', {
 	variants: {
 		color: {
 			blue: 'bg-primary-50 border-primary-300 text-primary-500',
@@ -24,10 +25,12 @@ interface DashboardCardProps extends VariantProps<typeof statsCardVariants> {
 
 const DashboardCard = ({ label, value, color, className }: DashboardCardProps) => {
 	return (
-		<div className={cn(statsCardVariants({ color }), className)}>
-			<div className="text-xs text-gray-600 mb-1">{label}</div>
-			<div className="text-2xl font-bold">{value}</div>
-		</div>
+		<Card className={cn('p-0 py-3 shadow-none rounded-sm', statsCardVariants({ color }), className)}>
+			<CardContent className="px-3 py-0">
+				<div className="text-xs text-gray-600 mb-1">{label}</div>
+				<div className="text-2xl font-bold">{value}</div>
+			</CardContent>
+		</Card>
 	);
 };
 
