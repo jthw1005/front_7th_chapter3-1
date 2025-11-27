@@ -159,7 +159,7 @@ const PostManagement = () => {
 
 		if (columnKey === 'actions') {
 			return (
-				<div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+				<div className="flex gap-2 flex-wrap">
 					<Button size="sm" variant="primary" onClick={() => handleEdit(row)}>
 						수정
 					</Button>
@@ -245,14 +245,14 @@ const PostManagement = () => {
 
 	return (
 		<>
-			<div style={{ marginBottom: '15px', textAlign: 'right' }}>
+			<div className="mb-4 text-right">
 				<Button variant="primary" size="md" onClick={() => setIsCreateModalOpen(true)}>
 					새로 만들기
 				</Button>
 			</div>
 
 			{showSuccessAlert && (
-				<div style={{ marginBottom: '10px' }}>
+				<div className="mb-2.5">
 					<Alert variant="success" title="성공" onClose={() => setShowSuccessAlert(false)}>
 						{alertMessage}
 					</Alert>
@@ -260,27 +260,20 @@ const PostManagement = () => {
 			)}
 
 			{showErrorAlert && (
-				<div style={{ marginBottom: '10px' }}>
+				<div className="mb-2.5">
 					<Alert variant="error" title="오류" onClose={() => setShowErrorAlert(false)}>
 						{errorMessage}
 					</Alert>
 				</div>
 			)}
 
-			<div
-				style={{
-					display: 'grid',
-					gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
-					gap: '10px',
-					marginBottom: '15px',
-				}}
-			>
+			<div className="grid grid-cols-[repeat(auto-fit,minmax(130px,1fr))] gap-2.5 mb-4">
 				{statList.map(({ label, value, color }) => {
-					return <DashboardCard label={label} value={value} color={color} />;
+					return <DashboardCard key={label} label={label} value={value} color={color} />;
 				})}
 			</div>
 
-			<div style={{ border: '1px solid #ddd', background: 'white', overflow: 'auto' }}>
+			<div className="border border-gray-300 bg-white overflow-auto">
 				<Table
 					columns={columns}
 					data={posts}
@@ -319,7 +312,7 @@ const PostManagement = () => {
 					</>
 				}
 			>
-				<div>
+				<div className="space-y-4">
 					<FormInput
 						name="title"
 						value={formData.title || ''}
@@ -330,7 +323,7 @@ const PostManagement = () => {
 						width="full"
 						fieldType="postTitle"
 					/>
-					<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+					<div className="grid grid-cols-2 gap-4">
 						<FormInput
 							name="author"
 							value={formData.author || ''}
@@ -397,7 +390,7 @@ const PostManagement = () => {
 					</>
 				}
 			>
-				<div>
+				<div className="space-y-4">
 					{selectedPost && (
 						<Alert variant="info">
 							ID: {selectedPost.id} | 생성일: {selectedPost.createdAt} | 조회수:{' '}
@@ -415,7 +408,7 @@ const PostManagement = () => {
 						width="full"
 						fieldType="postTitle"
 					/>
-					<div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+					<div className="grid grid-cols-2 gap-4">
 						<FormInput
 							name="author"
 							value={formData.author || ''}
