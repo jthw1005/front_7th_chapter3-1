@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/features/shared/libs/utils';
 
 const inputVariants = cva(
-	'form-input transition-colors focus:outline-none focus:border-primary-500',
+	'w-full px-3 py-2 text-base font-sans text-black dark:text-white border border-gray-300 dark:border-gray-600 rounded-[3px] bg-white dark:bg-gray-700 box-border transition-colors focus:outline-none focus:border-primary-500',
 	{
 		variants: {
 			error: {
@@ -11,10 +11,10 @@ const inputVariants = cva(
 				false: '',
 			},
 			width: {
-				small: 'input-width-small',
-				medium: 'input-width-medium',
-				large: 'input-width-large',
-				full: 'input-width-full',
+				small: 'w-[200px]',
+				medium: 'w-[300px]',
+				large: 'w-[400px]',
+				full: 'w-full',
 			},
 		},
 		defaultVariants: {
@@ -34,12 +34,18 @@ export interface InputProps
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 	({ className, error, width, label, helpText, required, name, ...props }, ref) => {
-		const helperClasses = cn('form-helper-text', error && 'error');
+		const helperClasses = cn(
+			'text-gray-600 dark:text-gray-400 text-sm font-sans mt-1',
+			error && 'text-danger-500',
+		);
 
 		return (
-			<div className="form-group">
+			<div className="mb-4">
 				{label && (
-					<label htmlFor={name} className="form-label">
+					<label
+						htmlFor={name}
+						className="block mb-2 text-gray-800 dark:text-gray-200 text-sm font-bold font-sans"
+					>
 						{label}
 						{required && <span className="text-destructive ml-1">*</span>}
 					</label>
@@ -62,7 +68,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
 					</span>
 				)}
 				{helpText && !error && (
-					<span id={`${name}-description`} className="form-helper-text">
+					<span id={`${name}-description`} className="text-gray-600 dark:text-gray-400 text-sm font-sans mt-1">
 						{helpText}
 					</span>
 				)}
