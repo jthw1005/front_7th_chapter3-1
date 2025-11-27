@@ -21,7 +21,7 @@
       "type": "color"
     },
     "--color-secondary-700": {
-      "value": "#2e2e2e",
+      "value": "#2c2c2c",
       "type": "color"
     },
     "--color-success-100": {
