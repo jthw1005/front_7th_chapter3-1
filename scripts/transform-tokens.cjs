@@ -3,7 +3,7 @@
 /**
  * Figma Tokens to CSS Transformer
  *
- * Converts figmaToken.json to CSS custom properties in components.css
+ * Converts figmaToken.json to CSS custom properties in tokens/color.css
  * Used by GitHub Actions to automate design token synchronization
  */
 
@@ -11,19 +11,19 @@ const fs = require('fs');
 const path = require('path');
 
 const TOKENS_FILE = path.join(__dirname, '../figmaToken.json');
-const CSS_FILE = path.join(__dirname, '../packages/after/src/styles/components.css');
+const TOKENS_DIR = path.join(__dirname, '../packages/after/src/tokens');
+const COLOR_CSS_FILE = path.join(TOKENS_DIR, 'color.css');
 
-// Token type to CSS comment mapping
+// Token type to CSS comment mapping (only colors)
 const TOKEN_CATEGORIES = {
   'color-primary': 'Colors - Primary',
   'color-secondary': 'Colors - Secondary',
   'color-success': 'Colors - Success',
   'color-danger': 'Colors - Danger',
   'color-warning': 'Colors - Warning',
-  'spacing': 'Spacing',
-  'font-size': 'Typography - Font Sizes',
-  'font-weight': 'Typography - Font Weights',
-  'line-height': 'Typography - Line Heights',
+  'color-info': 'Colors - Info',
+  'color-gray': 'Colors - Gray',
+  'color-white': 'Colors - White',
 };
 
 /**
@@ -54,12 +54,17 @@ function readTokens() {
 }
 
 /**
- * Group tokens by category
+ * Group tokens by category (filter only color tokens)
  */
 function groupTokens(tokens) {
   const grouped = {};
 
   for (const [name, token] of Object.entries(tokens)) {
+    // Only process color tokens
+    if (!name.startsWith('--color-')) {
+      continue;
+    }
+
     const category = categorizeToken(name);
     if (!grouped[category]) {
       grouped[category] = [];
@@ -71,11 +76,15 @@ function groupTokens(tokens) {
 }
 
 /**
- * Parse existing @theme block from CSS to preserve non-Figma tokens
+ * Parse existing @theme block from color.css to preserve non-Figma tokens
  */
 function parseExistingTheme() {
   try {
-    const content = fs.readFileSync(CSS_FILE, 'utf8');
+    if (!fs.existsSync(COLOR_CSS_FILE)) {
+      return {};
+    }
+
+    const content = fs.readFileSync(COLOR_CSS_FILE, 'utf8');
     const themeMatch = content.match(/@theme\s*\{([^}]*)\}/s);
 
     if (!themeMatch) {
@@ -150,22 +159,21 @@ function mergeTokens(existingTokens, newTokens) {
 }
 
 /**
- * Generate @theme block CSS content
+ * Generate @theme block CSS content for colors
  */
 function generateThemeCSS(groupedTokens) {
   const lines = ['@theme {'];
 
-  // Define category order
+  // Define category order (colors only)
   const categoryOrder = [
     'Colors - Primary',
     'Colors - Secondary',
     'Colors - Success',
     'Colors - Danger',
     'Colors - Warning',
-    'Spacing',
-    'Typography - Font Sizes',
-    'Typography - Font Weights',
-    'Typography - Line Heights',
+    'Colors - Info',
+    'Colors - Gray',
+    'Colors - White',
     'Other'
   ];
 
@@ -187,11 +195,21 @@ function generateThemeCSS(groupedTokens) {
 }
 
 /**
- * Read existing CSS and replace @theme block
+ * Write color tokens to color.css file
  */
 function updateCSS(newThemeBlock) {
   try {
-    let content = fs.readFileSync(CSS_FILE, 'utf8');
+    // Ensure tokens directory exists
+    if (!fs.existsSync(TOKENS_DIR)) {
+      fs.mkdirSync(TOKENS_DIR, { recursive: true });
+      console.log('✅ Created tokens directory');
+    }
+
+    let content = '';
+
+    if (fs.existsSync(COLOR_CSS_FILE)) {
+      content = fs.readFileSync(COLOR_CSS_FILE, 'utf8');
+    }
 
     // Find @theme block using regex
     const themeRegex = /@theme\s*\{[^}]*\}/s;
@@ -199,25 +217,18 @@ function updateCSS(newThemeBlock) {
     if (themeRegex.test(content)) {
       // Replace existing @theme block
       content = content.replace(themeRegex, newThemeBlock);
-      console.log('✅ Updated existing @theme block');
+      console.log('✅ Updated existing @theme block in color.css');
     } else {
-      // Insert new @theme block after @custom-variant
-      const insertPosition = content.indexOf('@custom-variant');
-      if (insertPosition !== -1) {
-        const lineEnd = content.indexOf('\n', insertPosition);
-        content = content.slice(0, lineEnd + 1) + '\n' + newThemeBlock + '\n' + content.slice(lineEnd + 1);
-        console.log('✅ Inserted new @theme block');
-      } else {
-        console.error('❌ Could not find insertion point in CSS file');
-        process.exit(1);
-      }
+      // Create new file with @theme block
+      content = newThemeBlock + '\n';
+      console.log('✅ Created new color.css with @theme block');
     }
 
-    fs.writeFileSync(CSS_FILE, content, 'utf8');
-    console.log('✅ CSS file updated successfully');
+    fs.writeFileSync(COLOR_CSS_FILE, content, 'utf8');
+    console.log('✅ color.css file updated successfully');
 
   } catch (error) {
-    console.error('❌ Error updating CSS file:', error.message);
+    console.error('❌ Error updating color.css file:', error.message);
     process.exit(1);
   }
 }
@@ -247,34 +258,31 @@ function generateSummary(groupedTokens) {
 function main() {
   console.log('🎨 Starting Figma Token Transformation...\n');
 
-  // Check if files exist
+  // Check if tokens file exists
   if (!fs.existsSync(TOKENS_FILE)) {
     console.error(`❌ Token file not found: ${TOKENS_FILE}`);
     process.exit(1);
   }
 
-  if (!fs.existsSync(CSS_FILE)) {
-    console.error(`❌ CSS file not found: ${CSS_FILE}`);
-    process.exit(1);
-  }
-
-  // Parse existing tokens from CSS
+  // Parse existing tokens from color.css
   const existingTokens = parseExistingTheme();
-  console.log(`📖 Found ${Object.values(existingTokens).flat().length} existing tokens in CSS`);
+  console.log(`📖 Found ${Object.values(existingTokens).flat().length} existing color tokens in color.css`);
 
   // Read and process new Figma tokens
   const newTokens = readTokens();
   console.log(`📥 Read ${Object.keys(newTokens).length} tokens from figmaToken.json`);
 
   const groupedNewTokens = groupTokens(newTokens);
+  const colorTokenCount = Object.values(groupedNewTokens).flat().length;
+  console.log(`🎨 Filtered ${colorTokenCount} color tokens`);
 
   // Merge existing with new tokens (new tokens take precedence)
   const mergedTokens = mergeTokens(existingTokens, groupedNewTokens);
-  console.log(`🔄 Merged into ${Object.values(mergedTokens).flat().length} total tokens`);
+  console.log(`🔄 Merged into ${Object.values(mergedTokens).flat().length} total color tokens`);
 
   const themeCSS = generateThemeCSS(mergedTokens);
 
-  // Update CSS file
+  // Update color.css file
   updateCSS(themeCSS);
 
   // Print summary
