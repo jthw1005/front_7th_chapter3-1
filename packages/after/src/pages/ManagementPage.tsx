@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
-import Button from '@/components/ui/button';
-import PostManagement from '@/components/PostManagement';
-import UserManagement from '@/components/UserManagement';
-import Text from '@/components/Text';
-import type { EntityType } from '@/types';
+import Button from '@/ui/button';
+import PostManagement from '@/features/post/components/PostManagement';
+import UserManagement from '@/features/user/components/UserManagement';
+import Text from '@/features/shared/components/Text';
+import type { EntityType } from '@/features/shared/types/common';
 
 const ManagementPage = () => {
 	const [entityType, setEntityType] = useState<EntityType>('post');

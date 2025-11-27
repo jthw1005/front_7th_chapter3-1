@@ -1,4 +1,4 @@
-import { Header } from '@/components/Header';
+import { Header } from '@/features/shared/components/Header';
 import ManagementPage from '@/pages/ManagementPage';
 import '@/styles/components.css';
 
