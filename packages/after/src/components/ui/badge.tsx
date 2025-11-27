@@ -14,7 +14,7 @@ export const badgeVariants = cva(
 				success: 'bg-success-500 text-white',
 				danger: 'bg-danger-500 text-white',
 				warning: 'bg-warning-500 text-white',
-				info: 'bg-yellow-500 text-white',
+				info: 'bg-info-500 text-white',
 			},
 			size: {
 				small: 'px-1 text-xs h-4',
